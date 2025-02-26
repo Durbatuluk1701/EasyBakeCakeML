@@ -2,7 +2,7 @@
  (name coq_easybakecakeml)
  (public_name coq-EasyBakeCakeML.plugin)
  (synopsis "A plugin for the EasyBakeCakeML project")
- (flags (:standard -rectypes -w -27))
+ (flags (:standard -rectypes -w -9-27))
  (libraries coq-core.vernac coq-core.lib coq-core.plugins.extraction)
  (modules (:standard)))
 

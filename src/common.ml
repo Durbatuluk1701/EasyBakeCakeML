@@ -108,7 +108,7 @@ let rec qualify delim = function
   | s::l -> s^delim^(qualify delim l)
 
 let dottify = qualify "."
-let pseudo_qualify = qualify "__"
+(* let pseudo_qualify = qualify "__" *)
 
 (*s Uppercase/lowercase renamings. *)
 
@@ -576,15 +576,6 @@ let pp_ocaml_gen k mp rls olab =
         if is_mp_bound base then pp_ocaml_bound base rls
         else pp_ocaml_extern k base rls
 
-(* For Haskell, things are simpler: we have removed (almost) all structures *)
-
-let pp_haskell_gen k mp rls = match rls with
-  | [] -> assert false
-  | s::rls' ->
-    let str = pseudo_qualify rls' in
-    let str = if is_upper str && not (upperkind k) then ("_"^str) else str in
-    if ModPath.equal (base_mp mp) (top_visible_mp ()) then str else s^"."^str
-
 (* Main name printing function for a reference *)
 
 let pp_global_with_key k key r =
@@ -598,11 +589,8 @@ let pp_global_with_key k key r =
     (add_visible (k,s) l; unquote s)
   else
     let rls = List.rev ls in (* for what come next it's easier this way *)
-    match lang () with
-      | Scheme -> unquote s (* no modular Scheme extraction... *)
-      | JSON -> dottify (List.map unquote rls)
-      | Haskell -> if modular () then pp_haskell_gen k mp rls else s
-      | Ocaml -> pp_ocaml_gen k mp rls (Some l)
+    (* NOTE: We know this is CakeML, but we use ocaml one! *)
+    pp_ocaml_gen k mp rls (Some l) (* Should maybe be its own function *)
 
 let pp_global k r =
   pp_global_with_key k (repr_of_r r) r
@@ -638,14 +626,12 @@ let is_ascii_registered () =
   && Coqlib.has_ref ascii_constructor_name
 
 let ascii_type_ref () = Coqlib.lib_ref ascii_type_name
+(* let ascii_constructor_ref () = Coqlib.lib_ref ascii_constructor_name *)
 
 let check_extract_ascii () =
   try
-    let char_type = match lang () with
-      | Ocaml -> "char"
-      | Haskell -> "Prelude.Char"
-      | _ -> raise Not_found
-    in
+    (* NOTE: Hardcoded since we know this is cakeml *)
+    let char_type = "char" in
     String.equal (find_custom @@ ascii_type_ref ()) (char_type)
   with Not_found -> false
 
@@ -670,6 +656,7 @@ let get_native_char c =
   Char.chr (cumul l)
 
 let pp_native_char c = str ("'"^Char.escaped (get_native_char c)^"'")
+let pp_native_char_cakeml c = str ("#\""^Char.escaped (get_native_char c)^"\"")
 
 (** Special hack for constants of type String.string : if an
     [Extract Inductive string => string] has been declared, then
@@ -685,13 +672,13 @@ let is_string_registered () =
   && Coqlib.has_ref string_constructor_name
 
 let string_type_ref () = Coqlib.lib_ref string_type_name
+(* let empty_string_ref () = Coqlib.lib_ref empty_string_name
+let string_constructor_ref () = Coqlib.lib_ref string_constructor_name *)
 
 let check_extract_string () =
   try
-    let string_type = match lang () with
-      | Ocaml -> "string"
-      | Haskell -> "Prelude.String"
-      | _ -> raise Not_found
+    (* NOTE: Hardcoded since we know this is cakeml *)
+    let string_type = "string"
     in
     String.equal (find_custom @@ string_type_ref ()) string_type
   with Not_found -> false

@@ -437,7 +437,7 @@ let mono_environment ~opaque_access refs mpl =
 let default_id = Id.of_string "Main"
 
 let mono_filename f =
-  let d = cakeml_descr in
+  let d = Cakeml.cakeml_descr in
   match f with
     | None -> None, None, default_id
     | Some f ->
@@ -466,7 +466,7 @@ let module_filename mp =
   let f = file_of_modfile mp in
   let id = Id.of_string f in
   let f = Filename.concat (output_directory ()) f in
-  let d = cakeml_descr in
+  let d = Cakeml.cakeml_descr in
   let fimpl_base = d.file_naming mp ^ d.file_suffix in
   let fimpl = Filename.concat (output_directory ()) fimpl_base in
   Some fimpl, Option.map ((^) f) d.sig_suffix, id
@@ -474,7 +474,7 @@ let module_filename mp =
 (*s Extraction of one decl to stdout. *)
 
 let print_one_decl struc mp decl =
-  let d = cakeml_descr in
+  let d = Cakeml.cakeml_descr in
   reset_renaming_tables AllButExternal;
   set_phase Pre;
   ignore (d.pp_struct struc);
@@ -520,7 +520,7 @@ let get_comment () =
 
 let print_structure_to_file (fn,si,mo) dry struc =
   Buffer.clear buf;
-  let d = cakeml_descr in
+  let d = Cakeml.cakeml_descr in
   reset_renaming_tables AllButExternal;
   let unsafe_needs = {
     mldummy = struct_ast_search Mlutil.isMLdummy struc;
@@ -584,7 +584,7 @@ let reset () =
 
 let init ?(compute=false) ?(inner=false) modular library =
   if not inner then check_inside_section ();
-  set_keywords (cakeml_descr).keywords;
+  set_keywords (Cakeml.cakeml_descr).keywords;
   set_modular modular;
   set_library library;
   set_extrcompute compute;

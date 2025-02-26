@@ -1,12 +1,12 @@
 ---
 # This file is used to configure the project metadata
-fullname: <Project Name>
-shortname: <Project Short Name> # NOTE: This is the library name that other projects will use to depend on/import from this project
-synopsis: "<Project Synopsis>"
-description: "<Project Description>"
+fullname: Easy Bake CakeML - CakeML Extraction Plugin
+shortname: EasyBakeCakeML # NOTE: This is the library name that other projects will use to depend on/import from this project
+synopsis: "An extraction plugin for CakeML"
+description: "An extraction plugin for CakeML that does not require any semantic preservation proofs."
 authors:
-  - name: "<Author Name>"
-    email: "<Author Email>"
+  - name: "Will Thomas"
+    email: "30wthomas@ku.edu"
 opam-file-maintainer: "30wthomas@ku.edu" # Need a strong default here or we will accidentally email a Coq developer
 
 ######################################################

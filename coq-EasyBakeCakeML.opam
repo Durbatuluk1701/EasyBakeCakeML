@@ -1,0 +1,30 @@
+# This file was generated from `meta.yml`, please do not edit manually.
+# Follow the instructions on https://github.com/coq-community/templates to regenerate.
+
+opam-version: "2.0"
+maintainer: "30wthomas@ku.edu"
+version: "dev"
+
+homepage: "https://github.com/ku-sldg/EasyBakeCakeML"
+dev-repo: "git+https://github.com/ku-sldg/EasyBakeCakeML.git"
+bug-reports: "https://github.com/ku-sldg/EasyBakeCakeML/issues"
+doc: "https://ku-sldg.github.io/EasyBakeCakeML/"
+license: "CC-BY-SA-4.0"
+
+synopsis: "An extraction plugin for CakeML"
+description: """
+An extraction plugin for CakeML that does not require any semantic preservation proofs."""
+
+build: ["dune" "build" "-p" name "-j" jobs]
+depends: [
+  "ocaml" { >= "4.12~" }
+  "dune" {>= "3.6"}
+  "coq" 
+]
+
+tags: [
+  "logpath:EasyBakeCakeML"
+]
+authors: [
+  "Will Thomas <30wthomas@ku.edu>"
+]

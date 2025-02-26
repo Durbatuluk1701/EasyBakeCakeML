@@ -210,8 +210,8 @@ val extract_inductive :
   qualid -> string -> string list -> string option -> unit
 
 
-type int_or_id = ArgInt of int | ArgId of Id.t
-val cakeml_extraction_implicit : qualid -> int_or_id list -> unit
+type cakeml_int_or_id = ArgInt of int | ArgId of Id.t
+val cakeml_extraction_implicit : qualid -> cakeml_int_or_id list -> unit
 
 (*s Table of blacklisted filenames *)
 

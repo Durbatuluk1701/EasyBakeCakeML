@@ -645,7 +645,7 @@ let { Goptions.get = file_comment } =
 
 let empty_inline_table = (Refset'.empty,Refset'.empty)
 
-let inline_table = Summary.ref empty_inline_table ~name:"ExtrInline"
+let inline_table = Summary.ref empty_inline_table ~name:"CakeML_ExtrInline"
 
 let to_inline r = Refset'.mem r (fst !inline_table)
 
@@ -653,7 +653,7 @@ let to_inline r = Refset'.mem r (fst !inline_table)
 
 let empty_foreign_set = Refset'.empty
 
-let foreign_set = Summary.ref empty_foreign_set ~name:"ExtrForeign"
+let foreign_set = Summary.ref empty_foreign_set ~name:"CakeML_ExtrForeign"
 
 let to_foreign r = Refset'.mem r !foreign_set
 
@@ -664,7 +664,7 @@ let to_foreign r = Refset'.mem r !foreign_set
 (* A map from qualid to string opt (alias) *)
 let empty_callback_map = Refmap'.empty
 
-let callback_map = Summary.ref empty_callback_map ~name:"ExtrCallback"
+let callback_map = Summary.ref empty_callback_map ~name:"CakeML_ExtrCallback"
 
 (* End of Extension for supporting callback registration cakeml_extraction. *)
 
@@ -687,7 +687,7 @@ let add_callback_entry alias_opt qualid_ref =
 (* Registration of operations for rollback. *)
 
 let inline_cakeml_extraction : bool * GlobRef.t list -> obj =
-  declare_object @@ superglobal_object "Extraction Inline"
+  declare_object @@ superglobal_object "CakeML_Extraction Inline"
     ~cache:(fun (b,l) -> add_inline_entries b l)
     ~subst:(Some (fun (s,(b,l)) -> (b,(List.map (fun x -> fst (subst_global s x)) l))))
     ~discharge:(fun x -> Some x)
@@ -721,11 +721,11 @@ let cakeml_extraction_inline b l =
 let print_cakeml_extraction_inline () =
   let (i,n)= !inline_table in
   let i'= Refset'.filter (function GlobRef.ConstRef _ -> true | _ -> false) i in
-    (str "Extraction Inline:" ++ fnl () ++
+    (str "CakeML_Extraction Inline:" ++ fnl () ++
      Refset'.fold
        (fun r p ->
           (p ++ str "  " ++ safe_pr_long_global r ++ fnl ())) i' (mt ()) ++
-     str "Extraction NoInline:" ++ fnl () ++
+     str "CakeML_Extraction NoInline:" ++ fnl () ++
      Refset'.fold
        (fun r p ->
           (p ++ str "  " ++ safe_pr_long_global r ++ fnl ())) n (mt ()))
@@ -733,17 +733,17 @@ let print_cakeml_extraction_inline () =
 (* Reset part *)
 
 let reset_inline : unit -> obj =
-  declare_object @@ superglobal_object_nodischarge "Reset Extraction Inline"
+  declare_object @@ superglobal_object_nodischarge "Reset CakeML_Extraction Inline"
     ~cache:(fun () -> inline_table := empty_inline_table)
     ~subst:None
 
 let reset_foreign : unit -> obj =
-  declare_object @@ superglobal_object_nodischarge "Reset Extraction Foreign"
+  declare_object @@ superglobal_object_nodischarge "Reset CakeML_Extraction Foreign"
     ~cache:(fun () -> foreign_set := empty_foreign_set)
     ~subst:None
 
 let reset_callback : unit -> obj =
-  declare_object @@ superglobal_object_nodischarge "Reset Extraction Callback"
+  declare_object @@ superglobal_object_nodischarge "Reset CakeML_Extraction Callback"
     ~cache:(fun () -> callback_map := empty_callback_map)
     ~subst:None
 
@@ -763,9 +763,9 @@ let err_or_warn_remaining_implicit k =
   else
     warning_remaining_implicit k
 
-type int_or_id = ArgInt of int | ArgId of Id.t
+type cakeml_int_or_id = ArgInt of int | ArgId of Id.t
 
-let implicits_table = Summary.ref Refmap'.empty ~name:"ExtrImplicit"
+let implicits_table = Summary.ref Refmap'.empty ~name:"CakeML_ExtrImplicit"
 
 let implicits_of_global r =
  try Refmap'.find r !implicits_table with Not_found -> Int.Set.empty
@@ -791,8 +791,8 @@ let add_implicits r l =
 
 (* Registration of operations for rollback. *)
 
-let implicit_cakeml_extraction : GlobRef.t * int_or_id list -> obj =
-  declare_object @@ superglobal_object_nodischarge "Extraction Implicit"
+let implicit_cakeml_extraction : GlobRef.t * cakeml_int_or_id list -> obj =
+  declare_object @@ superglobal_object_nodischarge "CakeML_Extraction Implicit"
     ~cache:(fun (r,l) -> add_implicits r l)
     ~subst:(Some (fun (s,(r,l)) -> (fst (subst_global s r), l)))
 
@@ -805,7 +805,7 @@ let cakeml_extraction_implicit r l =
 
 (*s Extraction Blacklist of filenames not to use while extracting *)
 
-let blacklist_table = Summary.ref Id.Set.empty ~name:"ExtrBlacklist"
+let blacklist_table = Summary.ref Id.Set.empty ~name:"CakeML_ExtrBlacklist"
 
 let modfile_ids = ref Id.Set.empty
 let modfile_mps = ref MPmap.empty
@@ -841,7 +841,7 @@ let add_blacklist_entries l =
 (* Registration of operations for rollback. *)
 
 let blacklist_cakeml_extraction : string list -> obj =
-  declare_object @@ superglobal_object_nodischarge "Extraction Blacklist"
+  declare_object @@ superglobal_object_nodischarge "CakeML_Extraction Blacklist"
     ~cache:add_blacklist_entries
     ~subst:None
 
@@ -859,7 +859,7 @@ let print_cakeml_extraction_blacklist () =
 (* Reset part *)
 
 let reset_blacklist : unit -> obj =
-  declare_object @@ superglobal_object_nodischarge "Reset Extraction Blacklist"
+  declare_object @@ superglobal_object_nodischarge "Reset CakeML_Extraction Blacklist"
     ~cache:(fun ()-> blacklist_table := Id.Set.empty)
     ~subst:None
 
@@ -870,7 +870,7 @@ let reset_cakeml_extraction_blacklist () = Lib.add_leaf (reset_blacklist ())
 (* UGLY HACK: to be defined in [cakeml_extraction.ml] *)
 let (use_type_scheme_nb_args, type_scheme_nb_args_hook) = Hook.make ()
 
-let customs = Summary.ref Refmap'.empty ~name:"ExtrCustom"
+let customs = Summary.ref Refmap'.empty ~name:"CakeML_ExtrCustom"
 
 let add_custom r ids s = customs := Refmap'.add r (ids,s) !customs
 
@@ -886,7 +886,7 @@ let find_custom r = snd (Refmap'.find r !customs)
 
 let find_type_custom r = Refmap'.find r !customs
 
-let custom_matchs = Summary.ref Refmap'.empty ~name:"ExtrCustomMatchs"
+let custom_matchs = Summary.ref Refmap'.empty ~name:"CakeML_ExtrCustomMatchs"
 
 let add_custom_match r s =
   custom_matchs := Refmap'.add r s !custom_matchs
@@ -917,14 +917,14 @@ let print_constref_cakeml_extractions ref_set val_lookup_f section_str =
        )
 
 let print_cakeml_extraction_foreign () =
-  print_constref_cakeml_extractions !foreign_set (find_custom) "Extraction Foreign Constant:"
+  print_constref_cakeml_extractions !foreign_set (find_custom) "CakeML_Extraction Foreign Constant:"
 
 let print_cakeml_extraction_callback () =
   let keys = Refmap'.domain !callback_map in
   print_constref_cakeml_extractions keys (fun r ->
     match find_callback r with
      | None   -> "no custom alias"
-     | Some s -> s) "Extraction Callbacks for Constants:"
+     | Some s -> s) "CakeML_Extraction Callbacks for Constants:"
 
 (* Registration of operations for rollback. *)
 

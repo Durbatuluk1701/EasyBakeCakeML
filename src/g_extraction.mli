@@ -8,5 +8,5 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-val wit_int_or_id: Table.int_or_id Genarg.vernac_genarg_type
-val wit_mlname: string Genarg.vernac_genarg_type
+val wit_cakeml_int_or_id: Table.cakeml_int_or_id Genarg.vernac_genarg_type
+val wit_cakemlname: string Genarg.vernac_genarg_type

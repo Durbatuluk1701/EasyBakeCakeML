@@ -26,26 +26,26 @@ open Names
 open Table
 open Extract_env
 
-let pr_mlname s = spc () ++ qs s
+let pr_cakemlname s = spc () ++ qs s
 
 }
 
-VERNAC ARGUMENT EXTEND mlname
-  PRINTED BY { pr_mlname }
+VERNAC ARGUMENT EXTEND cakemlname
+  PRINTED BY { pr_cakemlname }
 | [ preident(id) ] -> { id }
 | [ string(s) ] -> { s }
 END
 
 {
 
-let pr_int_or_id = function
+let pr_cakeml_int_or_id = function
   | ArgInt i -> int i
   | ArgId id -> Id.print id
 
 }
 
-VERNAC ARGUMENT EXTEND int_or_id
-  PRINTED BY { pr_int_or_id }
+VERNAC ARGUMENT EXTEND cakeml_int_or_id
+  PRINTED BY { pr_cakeml_int_or_id }
 | [ preident(id) ] -> { ArgId (Id.of_string id) }
 | [ integer(i) ] -> { ArgInt i }
 END
@@ -102,7 +102,7 @@ END
 
 VERNAC COMMAND EXTEND CakeML_ExtractionImplicit CLASSIFIED AS SIDEFF
 (* Custom implicit arguments of some csts/inds/constructors *)
-| [ "CakeML_Extraction" "Implicit" global(r) "[" int_or_id_list(l) "]" ]
+| [ "CakeML_Extraction" "Implicit" global(r) "[" cakeml_int_or_id_list(l) "]" ]
   -> { cakeml_extraction_implicit r l }
 END
 
@@ -149,18 +149,18 @@ END
 
 (* Overriding of a Coq object by an ML one *)
 VERNAC COMMAND EXTEND CakeML_ExtractionConstant CLASSIFIED AS SIDEFF
-| [ "Extract" "Constant" global(x) string_list(idl) "=>" mlname(y) ]
+| [ "Extract" "Constant" global(x) string_list(idl) "=>" cakemlname(y) ]
   -> { extract_constant_inline false x idl y }
 END
 
 VERNAC COMMAND EXTEND CakeML_ExtractionInlinedConstant CLASSIFIED AS SIDEFF
-| [ "Extract" "Inlined" "Constant" global(x) "=>" mlname(y) ]
+| [ "Extract" "Inlined" "Constant" global(x) "=>" cakemlname(y) ]
   -> { extract_constant_inline true x [] y }
 END
 
 VERNAC COMMAND EXTEND CakeML_ExtractionInductive CLASSIFIED AS SIDEFF
 | [ "Extract" "Inductive" global(x) "=>"
-    mlname(id) "[" mlname_list(idl) "]" string_opt(o) ]
+    cakemlname(id) "[" cakemlname_list(idl) "]" string_opt(o) ]
   -> { extract_inductive x id idl o }
 END
 (* Show the cakeml_extraction of the current proof *)

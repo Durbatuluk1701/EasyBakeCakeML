@@ -45,7 +45,7 @@ let environment_until dir_opt =
 
 
 (*s Visit:
-  a structure recording the needed dependencies for the current extraction *)
+  a structure recording the needed dependencies for the current cakeml_extraction *)
 
 module type VISIT = sig
   (* Reset the dependencies by emptying the visit lists *)
@@ -63,7 +63,7 @@ module type VISIT = sig
   val add_spec_deps : ml_spec -> unit
 
   (* Test functions:
-     is a particular object a needed dependency for the current extraction ? *)
+     is a particular object a needed dependency for the current cakeml_extraction ? *)
   val needed_ind : MutInd.t -> bool
   val needed_cst : Constant.t -> bool
   val needed_mp : ModPath.t -> bool
@@ -347,18 +347,12 @@ let rec extract_structure access env mp reso ~all = function
 
 and extract_mexpr access env mp = function
   | MEwith _ -> assert false (* no 'with' syntax for modules *)
-  | me when lang () != Ocaml || Table.is_extrcompute () ->
+  | me ->
       (* In Haskell/Scheme, we expand everything.
          For now, we also extract everything, dead code will be removed later
          (see [Modutil.optimize_struct]. *)
       let sign, delta = expand_mexpr env mp me in
       extract_msignature access env mp delta ~all:true sign
-  | MEident mp ->
-      if is_modfile mp && not (modular ()) then error_MPfile_as_mod mp false;
-      Visit.add_mp_all mp; Miniml.MEident mp
-  | MEapply (me, arg) ->
-      Miniml.MEapply (extract_mexpr access env mp me,
-                      extract_mexpr access env mp (MEident arg))
 
 and extract_mexpression access env mp mty = function
   | MENoFunctor me -> extract_mexpr access env mp me
@@ -446,13 +440,7 @@ let mono_filename f =
             Filename.chop_suffix f d.file_suffix
           else f
         in
-        let id =
-          if lang () != Haskell then default_id
-          else
-            try Id.of_string (Filename.basename f)
-            with UserError _ ->
-              user_err Pp.(str "Extraction: provided filename is not a valid identifier")
-        in
+        let id = default_id in
         let f =
           if Filename.is_relative f then
             Filename.concat (output_directory ()) f
@@ -526,9 +514,7 @@ let print_structure_to_file (fn,si,mo) dry struc =
     mldummy = struct_ast_search Mlutil.isMLdummy struc;
     tdummy = struct_type_search Mlutil.isTdummy struc;
     tunknown = struct_type_search ((==) Tunknown) struc;
-    magic =
-      if lang () != Haskell then false
-      else struct_ast_search (function MLmagic _ -> true | _ -> false) struc }
+    magic = false }
   in
   (* First, a dry run, for computing objects to rename or duplicate *)
   set_phase Pre;
@@ -575,7 +561,7 @@ let print_structure_to_file (fn,si,mo) dry struc =
 
 
 (*********************************************)
-(*s Part III: the actual extraction commands *)
+(*s Part III: the actual cakeml_extraction commands *)
 (*********************************************)
 
 
@@ -588,8 +574,7 @@ let init ?(compute=false) ?(inner=false) modular library =
   set_modular modular;
   set_library library;
   set_extrcompute compute;
-  reset ();
-  if modular && lang () == Scheme then error_scheme ()
+  reset ()
 
 let warns () =
   warning_opaques (access_opaque ());
@@ -614,7 +599,7 @@ let rec locate_ref = function
            warning_ambiguous_name (qid,mp,r);
            let refs,mps = locate_ref l in refs,mp::mps
 
-(*s Recursive extraction in the Coq toplevel. The vernacular command is
+(*s Recursive cakeml_extraction in the Coq toplevel. The vernacular command is
     \verb!Recursive Extraction! [qualid1] ... [qualidn]. Also used when
     extracting to a file with the command:
     \verb!Extraction "file"! [qualid1] ... [qualidn]. *)
@@ -627,13 +612,13 @@ let full_extr opaque_access f (refs,mps) =
   print_structure_to_file (mono_filename f) false struc;
   reset ()
 
-let full_extraction ~opaque_access f lr =
+let full_cakeml_extraction ~opaque_access f lr =
   full_extr opaque_access f (locate_ref lr)
 
-(*s Separate extraction is similar to recursive extraction, with the output
+(*s Separate cakeml_extraction is similar to recursive cakeml_extraction, with the output
    decomposed in many files, one per Coq .v file *)
 
-let separate_extraction ~opaque_access lr =
+let separate_cakeml_extraction ~opaque_access lr =
   init true false;
   let refs,mps = locate_ref lr in
   let struc = optimize_struct (refs,mps) (mono_environment ~opaque_access refs mps) in
@@ -652,10 +637,10 @@ let separate_extraction ~opaque_access lr =
   List.iter print struc;
   reset ()
 
-(*s Simple extraction in the Coq toplevel. The vernacular command
+(*s Simple cakeml_extraction in the Coq toplevel. The vernacular command
     is \verb!Extraction! [qualid]. *)
 
-let simple_extraction ~opaque_access r =
+let simple_cakeml_extraction ~opaque_access r =
   match locate_ref [r] with
   | ([], [mp]) as p -> full_extr opaque_access None p
   | [r],[] ->
@@ -664,7 +649,7 @@ let simple_extraction ~opaque_access r =
       let d = get_decl_in_structure r struc in
       warns ();
       let flag =
-        if is_custom r then str "(** User defined extraction *)" ++ fnl()
+        if is_custom r then str "(** User defined cakeml_extraction *)" ++ fnl()
         else mt ()
       in
       let ans = flag ++ print_one_decl struc (modpath_of_r r) d in
@@ -676,7 +661,7 @@ let simple_extraction ~opaque_access r =
 (*s (Recursive) Extraction of a library. The vernacular command is
   \verb!(Recursive) Extraction Library! [M]. *)
 
-let extraction_library ~opaque_access is_rec CAst.{loc;v=m} =
+let cakeml_extraction_library ~opaque_access is_rec CAst.{loc;v=m} =
   init true true;
   let dir_m =
     let q = qualid_of_ident m in
@@ -702,7 +687,7 @@ let extraction_library ~opaque_access is_rec CAst.{loc;v=m} =
   List.iter print struc;
   reset ()
 
-(** For extraction compute, we flatten all the module structure,
+(** For cakeml_extraction compute, we flatten all the module structure,
     getting rid of module types or unapplied functors *)
 
 let flatten_structure struc =
@@ -728,7 +713,9 @@ let structure_for_compute ~opaque_access env sg c =
   (flatten_structure struc), ast, mlt
 
 (* For the test-suite :
-   extraction to a temporary file + run ocamlc on it *)
+   cakeml_extraction to a temporary file + run ocamlc on it *)
+
+(*
 
 let compile f =
   try
@@ -750,22 +737,21 @@ let compile f =
       Pp.(str "Compilation of file " ++ str f ++
           str " failed with error " ++ str (Unix.error_message e))
 
-let remove f =
-  if Sys.file_exists f then Sys.remove f
+let remove f = if Sys.file_exists f then Sys.remove f
 
 let extract_and_compile ~opaque_access l =
-  if lang () != Ocaml then
-    CErrors.user_err (Pp.str "This command only works with OCaml extraction");
-  let f = Filename.temp_file "testextraction" ".ml" in
-  let () = full_extraction ~opaque_access (Some f) l in
+  CErrors.user_err (Pp.str "This command only works with OCaml cakeml_extraction");
+  let f = Filename.temp_file "testcakeml_extraction" ".ml" in
+  let () = full_cakeml_extraction ~opaque_access (Some f) l in
   let () = compile f in
   let () = remove f; remove (f^"i") in
   let base = Filename.chop_suffix f ".ml" in
   let () = remove (base^".cmo"); remove (base^".cmi") in
   Feedback.msg_notice (str "Extracted code successfully compiled")
+*)
 
-(* Show the extraction of the current ongoing proof *)
-let show_extraction ~pstate =
+(* Show the cakeml_extraction of the current ongoing proof *)
+let show_cakeml_extraction ~pstate =
   init ~inner:true false false;
   let prf = Declare.Proof.get pstate in
   let sigma, env = Declare.Proof.get_current_context pstate in

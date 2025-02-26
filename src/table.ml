@@ -61,15 +61,15 @@ let raw_string_of_modfile = function
   | MPfile f -> String.capitalize_ascii (Id.to_string (List.hd (DirPath.repr f)))
   | _ -> assert false
 
-let extraction_current_mp () = fst (Safe_typing.flatten_env (Global.safe_env ()))
+let cakeml_extraction_current_mp () = fst (Safe_typing.flatten_env (Global.safe_env ()))
 
-let is_toplevel mp = ModPath.equal mp (extraction_current_mp ())
+let is_toplevel mp = ModPath.equal mp (cakeml_extraction_current_mp ())
 
 let at_toplevel mp =
   is_modfile mp || is_toplevel mp
 
 let mp_length mp =
-  let mp0 = extraction_current_mp () in
+  let mp0 = cakeml_extraction_current_mp () in
   let rec len = function
     | mp when ModPath.equal mp mp0 -> 1
     | MPdot (mp,_) -> 1 + len mp
@@ -266,7 +266,7 @@ let safe_basename_of_global r =
   let last_chance r =
     try Nametab.basename_of_global r
     with Not_found ->
-      anomaly (Pp.str "Inductive object unknown to extraction and not globally visible.")
+      anomaly (Pp.str "Inductive object unknown to cakeml_extraction and not globally visible.")
   in
   let open GlobRef in
   match r with
@@ -306,16 +306,18 @@ let pr_long_global ref = pr_path (Nametab.path_of_global ref)
 
 let err ?loc s = user_err ?loc s
 
-let warn_extraction_axiom_to_realize =
-  CWarnings.create ~name:"extraction-axiom-to-realize" ~category:CWarnings.CoreCategories.extraction
+let cake_extr_warnings = CWarnings.create_category ~name:"cakeml_extraction" ()
+
+let warn_cakeml_extraction_axiom_to_realize =
+  CWarnings.create ~name:"cakeml_extraction-axiom-to-realize" ~category:cake_extr_warnings
          (fun axioms ->
           let s = if Int.equal (List.length axioms) 1 then "axiom" else "axioms" in
           strbrk ("The following "^s^" must be realized in the extracted code:")
                    ++ hov 1 (spc () ++ prlist_with_sep spc safe_pr_global axioms)
                    ++ str "." ++ fnl ())
 
-let warn_extraction_logical_axiom =
-  CWarnings.create ~name:"extraction-logical-axiom" ~category:CWarnings.CoreCategories.extraction
+let warn_cakeml_extraction_logical_axiom =
+  CWarnings.create ~name:"cakeml_extraction-logical-axiom" ~category:cake_extr_warnings
          (fun axioms ->
           let s =
             if Int.equal (List.length axioms) 1 then "axiom was" else "axioms were"
@@ -326,40 +328,40 @@ let warn_extraction_logical_axiom =
            ++ spc () ++ strbrk "may lead to incorrect or non-terminating ML terms." ++
              fnl ()))
 
-let warn_extraction_symbols =
+let warn_cakeml_extraction_symbols =
   let pp_symb_with_rules (symb, rules) =
     safe_pr_global symb ++
     if List.is_empty rules then str " (no rules)" else
     str ":" ++ spc() ++ prlist_with_sep spc Label.print rules
   in
-  CWarnings.create ~name:"extraction-symbols" ~category:CWarnings.CoreCategories.extraction
+  CWarnings.create ~name:"cakeml_extraction-symbols" ~category:cake_extr_warnings
     (fun symbols ->
       strbrk ("The following symbols and rules were encountered:") ++ fnl () ++
       prlist_with_sep fnl pp_symb_with_rules symbols ++ fnl () ++
       strbrk "The symbols must be realized such that the rewrite rules apply," ++ spc () ++
-      strbrk "or extraction may lead to incorrect or non-terminating ML terms." ++
+      strbrk "or cakeml_extraction may lead to incorrect or non-terminating ML terms." ++
       fnl ())
 
 let warning_axioms () =
   let info_axioms = Refset'.elements !info_axioms in
   if not (List.is_empty info_axioms) then
-    warn_extraction_axiom_to_realize info_axioms;
+    warn_cakeml_extraction_axiom_to_realize info_axioms;
   let log_axioms = Refset'.elements !log_axioms in
   if not (List.is_empty log_axioms) then
-    warn_extraction_logical_axiom log_axioms;
+    warn_cakeml_extraction_logical_axiom log_axioms;
   let symbols = Refmap'.bindings !symbols in
   if not (List.is_empty symbols) then
-    warn_extraction_symbols symbols
+    warn_cakeml_extraction_symbols symbols
 
-let warn_extraction_opaque_accessed =
-  CWarnings.create ~name:"extraction-opaque-accessed" ~category:CWarnings.CoreCategories.extraction
-    (fun lst -> strbrk "The extraction is currently set to bypass opacity, " ++
+let warn_cakeml_extraction_opaque_accessed =
+  CWarnings.create ~name:"cakeml_extraction-opaque-accessed" ~category:cake_extr_warnings
+    (fun lst -> strbrk "The cakeml_extraction is currently set to bypass opacity, " ++
                   strbrk "the following opaque constant bodies have been accessed :" ++
                   lst ++ str "." ++ fnl ())
 
-let warn_extraction_opaque_as_axiom =
-  CWarnings.create ~name:"extraction-opaque-as-axiom" ~category:CWarnings.CoreCategories.extraction
-    (fun lst -> strbrk "The extraction now honors the opacity constraints by default, " ++
+let warn_cakeml_extraction_opaque_as_axiom =
+  CWarnings.create ~name:"cakeml_extraction-opaque-as-axiom" ~category:cake_extr_warnings
+    (fun lst -> strbrk "The cakeml_extraction now honors the opacity constraints by default, " ++
          strbrk "the following opaque constants have been extracted as axioms :" ++
          lst ++ str "." ++ fnl () ++
          strbrk "If necessary, use \"Set Extraction AccessOpaque\" to change this."
@@ -369,11 +371,11 @@ let warning_opaques accessed =
   let opaques = Refset'.elements !opaques in
   if not (List.is_empty opaques) then
     let lst = hov 1 (spc () ++ prlist_with_sep spc safe_pr_global opaques) in
-    if accessed then warn_extraction_opaque_accessed lst
-    else warn_extraction_opaque_as_axiom lst
+    if accessed then warn_cakeml_extraction_opaque_accessed lst
+    else warn_cakeml_extraction_opaque_as_axiom lst
 
 let warning_ambiguous_name =
-  CWarnings.create ~name:"extraction-ambiguous-name" ~category:CWarnings.CoreCategories.extraction
+  CWarnings.create ~name:"cakeml_extraction-ambiguous-name" ~category:cake_extr_warnings
     (fun (q,mp,r) -> strbrk "The name " ++ pr_qualid q ++ strbrk " is ambiguous, " ++
                        strbrk "do you mean module " ++
                        pr_long_mp mp ++
@@ -392,12 +394,12 @@ let check_inside_section () =
     err (str "You can't do that within a section." ++ fnl () ++
          str "Close it and try again.")
 
-let warn_extraction_reserved_identifier =
-  CWarnings.create ~name:"extraction-reserved-identifier" ~category:CWarnings.CoreCategories.extraction
+let warn_cakeml_extraction_reserved_identifier =
+  CWarnings.create ~name:"cakeml_extraction-reserved-identifier" ~category:cake_extr_warnings
     (fun s -> strbrk ("The identifier "^s^
-                " contains __ which is reserved for the extraction"))
+                " contains __ which is reserved for the cakeml_extraction"))
 
-let warning_id s = warn_extraction_reserved_identifier s
+let warning_id s = warn_cakeml_extraction_reserved_identifier s
 
 let error_constant ?loc r =
   err ?loc (safe_pr_global r ++ str " is not a constant.")
@@ -417,7 +419,7 @@ let error_no_module_expr mp =
   err (str "The module " ++ pr_long_mp mp
        ++ str " has no body, it probably comes from\n"
        ++ str "some Declare Module outside any Module Type.\n"
-       ++ str "This situation is currently unsupported by the extraction.")
+       ++ str "This situation is currently unsupported by the cakeml_extraction.")
 
 let error_singleton_become_prop id og =
   let loc =
@@ -438,7 +440,7 @@ let error_unknown_module ?loc m =
   err ?loc (str "Module" ++ spc () ++ pr_qualid m ++ spc () ++ str "not found.")
 
 let error_scheme () =
-  err (str "No Scheme modular extraction available yet.")
+  err (str "No Scheme modular cakeml_extraction available yet.")
 
 let error_not_visible r =
   err (safe_pr_global r ++ str " is not directly visible.\n" ++
@@ -471,25 +473,25 @@ let msg_of_implicit = function
 
 let error_remaining_implicit k =
   let s = msg_of_implicit k in
-  err (str ("An implicit occurs after extraction : "^s^".") ++ fnl () ++
+  err (str ("An implicit occurs after cakeml_extraction : "^s^".") ++ fnl () ++
        str "Please check your Extraction Implicit declarations." ++ fnl() ++
        str "You might also try Unset Extraction SafeImplicits to force" ++
-       fnl() ++ str "the extraction of unsafe code and review it manually.")
+       fnl() ++ str "the cakeml_extraction of unsafe code and review it manually.")
 
-let warn_extraction_remaining_implicit =
-  CWarnings.create ~name:"extraction-remaining-implicit" ~category:CWarnings.CoreCategories.extraction
-    (fun s -> strbrk ("At least an implicit occurs after extraction : "^s^".") ++ fnl () ++
+let warn_cakeml_extraction_remaining_implicit =
+  CWarnings.create ~name:"cakeml_extraction-remaining-implicit" ~category:cake_extr_warnings
+    (fun s -> strbrk ("At least an implicit occurs after cakeml_extraction : "^s^".") ++ fnl () ++
      strbrk "Extraction SafeImplicits is unset, extracting nonetheless,"
      ++ strbrk "but this code is potentially unsafe, please review it manually.")
 
 let warning_remaining_implicit k =
   let s = msg_of_implicit k in
-  warn_extraction_remaining_implicit s
+  warn_cakeml_extraction_remaining_implicit s
 
 let check_loaded_modfile mp = match base_mp mp with
   | MPfile dp ->
       if not (Library.library_is_loaded dp) then begin
-        match base_mp (extraction_current_mp ()) with
+        match base_mp (cakeml_extraction_current_mp ()) with
           | MPfile dp' when not (DirPath.equal dp dp') ->
             err (str "Please load library " ++ DirPath.print dp ++ str " first.")
           | _ -> ()
@@ -498,7 +500,7 @@ let check_loaded_modfile mp = match base_mp mp with
 
 let info_file f =
   Flags.if_verbose Feedback.msg_info
-    (str ("The file "^f^" has been created by extraction."))
+    (str ("The file "^f^" has been created by cakeml_extraction."))
 
 
 (*S The Extraction auxiliary commands *)
@@ -509,7 +511,7 @@ let info_file f =
 let my_bool_option name value =
   let { Goptions.get } =
     declare_bool_option_and_ref
-    ~key:["Extraction"; name]
+    ~key:["CakeMLExtraction"; name]
     ~value
     ()
   in
@@ -518,15 +520,15 @@ let my_bool_option name value =
 (*s Extraction Output Directory *)
 
 let warn_using_current_directory =
-  CWarnings.(create ~name:"extraction-default-directory" ~category:CoreCategories.extraction)
+  CWarnings.(create ~name:"cakeml_extraction-default-directory" ~category:cake_extr_warnings)
     (fun s ->
        Pp.(strbrk
-             "Setting extraction output directory by default to \"" ++ str s ++ strbrk "\". Use \"" ++
+             "Setting cakeml_extraction output directory by default to \"" ++ str s ++ strbrk "\". Use \"" ++
            str "Set Extraction Output Directory" ++
            strbrk "\" or command line option \"-output-directory\" to " ++
            strbrk "set a different directory for extracted files to appear in."))
 
-let output_directory_key = ["Extraction"; "Output"; "Directory"]
+let output_directory_key = ["CakeMLExtraction"; "Output"; "Directory"]
 
 let { Goptions.get = output_directory } =
   declare_stringopt_option_and_ref ~stage:Summary.Stage.Interp ~value:None
@@ -611,14 +613,14 @@ let optims () = !opt_flag_ref
 let () = declare_bool_option
           {optstage = Summary.Stage.Interp;
            optdepr = None;
-           optkey = ["Extraction"; "Optimize"];
+           optkey = ["CakeMLExtraction"; "Optimize"];
            optread = (fun () -> not (Int.equal !int_flag_ref 0));
            optwrite = (fun b -> chg_flag (if b then int_flag_init else 0))}
 
 let () = declare_int_option
           { optstage = Summary.Stage.Interp;
             optdepr = None;
-            optkey = ["Extraction";"Flag"];
+            optkey = ["CakeMLExtraction";"Flag"];
             optread = (fun _ -> Some !int_flag_ref);
             optwrite = (function
                           | None -> chg_flag 0
@@ -628,31 +630,16 @@ let () = declare_int_option
    toplevel constant is defined. *)
 let { Goptions.get = conservative_types } =
   declare_bool_option_and_ref
-    ~key:["Extraction"; "Conservative"; "Types"]
+    ~key:["CakeMLExtraction"; "Conservative"; "Types"]
     ~value:false
     ()
 
 (* Allows to print a comment at the beginning of the output files *)
 let { Goptions.get = file_comment } =
   declare_string_option_and_ref
-    ~key:["Extraction"; "File"; "Comment"]
+    ~key:["CakeMLExtraction"; "File"; "Comment"]
     ~value:""
     ()
-
-(*s Extraction Lang *)
-
-type lang = Ocaml | Haskell | Scheme | JSON
-
-let lang_ref = Summary.ref Ocaml ~name:"ExtrLang"
-
-let lang () = !lang_ref
-
-let extr_lang : lang -> obj =
-  declare_object @@ superglobal_object_nodischarge "Extraction Lang"
-    ~cache:(fun l -> lang_ref := l)
-    ~subst:None
-
-let extraction_language x = Lib.add_leaf (extr_lang x)
 
 (*s Extraction Inline/NoInline *)
 
@@ -662,7 +649,7 @@ let inline_table = Summary.ref empty_inline_table ~name:"ExtrInline"
 
 let to_inline r = Refset'.mem r (fst !inline_table)
 
-(* Extension for supporting foreign function call extraction. *)
+(* Extension for supporting foreign function call cakeml_extraction. *)
 
 let empty_foreign_set = Refset'.empty
 
@@ -670,16 +657,16 @@ let foreign_set = Summary.ref empty_foreign_set ~name:"ExtrForeign"
 
 let to_foreign r = Refset'.mem r !foreign_set
 
-(* End of Extension for supporting foreign function call extraction. *)
+(* End of Extension for supporting foreign function call cakeml_extraction. *)
 
-(* Extension for supporting callback registration extraction. *)
+(* Extension for supporting callback registration cakeml_extraction. *)
 
 (* A map from qualid to string opt (alias) *)
 let empty_callback_map = Refmap'.empty
 
 let callback_map = Summary.ref empty_callback_map ~name:"ExtrCallback"
 
-(* End of Extension for supporting callback registration extraction. *)
+(* End of Extension for supporting callback registration cakeml_extraction. *)
 
 let to_keep r = Refset'.mem r (snd !inline_table)
 
@@ -690,48 +677,48 @@ let add_inline_entries b l =
   (List.fold_right (f b) l i),
   (List.fold_right (f (not b)) l k)
 
-let add_foreign_entries l =
+(* let add_foreign_entries l =
   foreign_set := List.fold_right (Refset'.add) l !foreign_set
 
 (* Adds the qualid_ref and alias opt to the callback_map. *)
 let add_callback_entry alias_opt qualid_ref =
-  callback_map := Refmap'.add qualid_ref alias_opt !callback_map
+  callback_map := Refmap'.add qualid_ref alias_opt !callback_map *)
 
 (* Registration of operations for rollback. *)
 
-let inline_extraction : bool * GlobRef.t list -> obj =
+let inline_cakeml_extraction : bool * GlobRef.t list -> obj =
   declare_object @@ superglobal_object "Extraction Inline"
     ~cache:(fun (b,l) -> add_inline_entries b l)
     ~subst:(Some (fun (s,(b,l)) -> (b,(List.map (fun x -> fst (subst_global s x)) l))))
     ~discharge:(fun x -> Some x)
 
-let foreign_extraction : GlobRef.t list -> obj =
+(* let foreign_cakeml_extraction : GlobRef.t list -> obj =
   declare_object @@ superglobal_object "Extraction Foreign"
     ~cache:(fun l -> add_foreign_entries l)
     ~subst:(Some (fun (s,l) -> (List.map (fun x -> fst (subst_global s x)) l)))
     ~discharge:(fun x -> Some x)
 
-let callback_extraction : string option * GlobRef.t -> obj =
+let callback_cakeml_extraction : string option * GlobRef.t -> obj =
   declare_object @@ superglobal_object "Extraction Callback"
     ~cache:(fun (alias, x) -> add_callback_entry alias x)
     ~subst:(Some (fun (s,(alias, x)) -> (alias, (fst (subst_global s x)))))
-    ~discharge:(fun x -> Some x)
+    ~discharge:(fun x -> Some x) *)
 
 
 
 (* Grammar entries. *)
 
-let extraction_inline b l =
+let cakeml_extraction_inline b l =
   let refs = List.map Smartlocate.global_with_alias l in
   List.iter
     (fun r -> match r with
        | GlobRef.ConstRef _ -> ()
        | _ -> error_constant r) refs;
-  Lib.add_leaf (inline_extraction (b,refs))
+  Lib.add_leaf (inline_cakeml_extraction (b,refs))
 
 (* Printing part *)
 
-let print_extraction_inline () =
+let print_cakeml_extraction_inline () =
   let (i,n)= !inline_table in
   let i'= Refset'.filter (function GlobRef.ConstRef _ -> true | _ -> false) i in
     (str "Extraction Inline:" ++ fnl () ++
@@ -760,11 +747,11 @@ let reset_callback : unit -> obj =
     ~cache:(fun () -> callback_map := empty_callback_map)
     ~subst:None
 
-let reset_extraction_inline () = Lib.add_leaf (reset_inline ())
+let reset_cakeml_extraction_inline () = Lib.add_leaf (reset_inline ())
 
-let reset_extraction_foreign () = Lib.add_leaf (reset_foreign ())
+let reset_cakeml_extraction_foreign () = Lib.add_leaf (reset_foreign ())
 
-let reset_extraction_callback () = Lib.add_leaf (reset_callback ())
+let reset_cakeml_extraction_callback () = Lib.add_leaf (reset_callback ())
 
 (*s Extraction Implicit *)
 
@@ -804,16 +791,16 @@ let add_implicits r l =
 
 (* Registration of operations for rollback. *)
 
-let implicit_extraction : GlobRef.t * int_or_id list -> obj =
+let implicit_cakeml_extraction : GlobRef.t * int_or_id list -> obj =
   declare_object @@ superglobal_object_nodischarge "Extraction Implicit"
     ~cache:(fun (r,l) -> add_implicits r l)
     ~subst:(Some (fun (s,(r,l)) -> (fst (subst_global s r), l)))
 
 (* Grammar entries. *)
 
-let extraction_implicit r l =
+let cakeml_extraction_implicit r l =
   check_inside_section ();
-  Lib.add_leaf (implicit_extraction (Smartlocate.global_with_alias r,l))
+  Lib.add_leaf (implicit_cakeml_extraction (Smartlocate.global_with_alias r,l))
 
 
 (*s Extraction Blacklist of filenames not to use while extracting *)
@@ -853,20 +840,20 @@ let add_blacklist_entries l =
 
 (* Registration of operations for rollback. *)
 
-let blacklist_extraction : string list -> obj =
+let blacklist_cakeml_extraction : string list -> obj =
   declare_object @@ superglobal_object_nodischarge "Extraction Blacklist"
     ~cache:add_blacklist_entries
     ~subst:None
 
 (* Grammar entries. *)
 
-let extraction_blacklist l =
+let cakeml_extraction_blacklist l =
   let l = List.rev l in
-  Lib.add_leaf (blacklist_extraction l)
+  Lib.add_leaf (blacklist_cakeml_extraction l)
 
 (* Printing part *)
 
-let print_extraction_blacklist () =
+let print_cakeml_extraction_blacklist () =
   prlist_with_sep fnl Id.print (Id.Set.elements !blacklist_table)
 
 (* Reset part *)
@@ -876,11 +863,11 @@ let reset_blacklist : unit -> obj =
     ~cache:(fun ()-> blacklist_table := Id.Set.empty)
     ~subst:None
 
-let reset_extraction_blacklist () = Lib.add_leaf (reset_blacklist ())
+let reset_cakeml_extraction_blacklist () = Lib.add_leaf (reset_blacklist ())
 
 (*s Extract Constant/Inductive. *)
 
-(* UGLY HACK: to be defined in [extraction.ml] *)
+(* UGLY HACK: to be defined in [cakeml_extraction.ml] *)
 let (use_type_scheme_nb_args, type_scheme_nb_args_hook) = Hook.make ()
 
 let customs = Summary.ref Refmap'.empty ~name:"ExtrCustom"
@@ -921,7 +908,7 @@ let find_custom_match pv =
 
 (* Printing entries *)
 
-let print_constref_extractions ref_set val_lookup_f section_str =
+let print_constref_cakeml_extractions ref_set val_lookup_f section_str =
   let i'= Refset'.filter (function GlobRef.ConstRef _ -> true | _ -> false) ref_set in
       (str section_str ++ fnl () ++
        Refset'.fold
@@ -929,12 +916,12 @@ let print_constref_extractions ref_set val_lookup_f section_str =
             (p ++ str "  " ++ safe_pr_long_global r ++ str " => \"" ++ str (val_lookup_f r) ++ str "\"" ++ fnl ())) i' (mt ())
        )
 
-let print_extraction_foreign () =
-  print_constref_extractions !foreign_set (find_custom) "Extraction Foreign Constant:"
+let print_cakeml_extraction_foreign () =
+  print_constref_cakeml_extractions !foreign_set (find_custom) "Extraction Foreign Constant:"
 
-let print_extraction_callback () =
+let print_cakeml_extraction_callback () =
   let keys = Refmap'.domain !callback_map in
-  print_constref_extractions keys (fun r ->
+  print_constref_cakeml_extractions keys (fun r ->
     match find_callback r with
      | None   -> "no custom alias"
      | Some s -> s) "Extraction Callbacks for Constants:"
@@ -942,26 +929,26 @@ let print_extraction_callback () =
 (* Registration of operations for rollback. *)
 
 let in_customs : GlobRef.t * string list * string -> obj =
-  declare_object @@ superglobal_object_nodischarge "ML extractions"
+  declare_object @@ superglobal_object_nodischarge "ML cakeml_extractions"
     ~cache:(fun (r,ids,s) -> add_custom r ids s)
     ~subst:(Some (fun (s,(r,ids,str)) -> (fst (subst_global s r), ids, str)))
 
 let in_custom_matchs : GlobRef.t * string -> obj =
-  declare_object @@ superglobal_object_nodischarge "ML extractions custom matches"
+  declare_object @@ superglobal_object_nodischarge "ML cakeml_extractions custom matches"
     ~cache:(fun (r,s) -> add_custom_match r s)
     ~subst:(Some (fun (subs,(r,s)) -> (fst (subst_global subs r), s)))
 
 (* Grammar entries. *)
 
-let extract_callback optstr x =
+(* let extract_callback optstr x =
   if lang () != Ocaml then
-      CErrors.user_err (Pp.str "Extract Callback is supported only for OCaml extraction.");
+      CErrors.user_err (Pp.str "Extract Callback is supported only for OCaml cakeml_extraction.");
 
   let qualid_ref = Smartlocate.global_with_alias x in
   match qualid_ref with
-      (* Add the alias and qualid_ref to callback extraction.*)
-    | GlobRef.ConstRef _ -> Lib.add_leaf (callback_extraction (optstr, qualid_ref))
-    | _                  -> error_constant ?loc:x.CAst.loc qualid_ref
+      (* Add the alias and qualid_ref to callback cakeml_extraction.*)
+    | GlobRef.ConstRef _ -> Lib.add_leaf (callback_cakeml_extraction (optstr, qualid_ref))
+    | _                  -> error_constant ?loc:x.CAst.loc qualid_ref *)
 
 let extract_constant_generic r ids s arity_handler (is_redef, redef_msg) extr_type =
   check_inside_section ();
@@ -984,16 +971,16 @@ let extract_constant_inline inline r ids s =
     let nargs = Hook.get use_type_scheme_nb_args env typ in
     if not (Int.equal (List.length ids) nargs) then error_axiom_scheme ?loc:r.CAst.loc g nargs
   in
-  extract_constant_generic r ids s (arity_handler) (is_foreign_custom, "foreign") (fun g -> inline_extraction (inline,[g]))
+  extract_constant_generic r ids s (arity_handler) (is_foreign_custom, "foreign") (fun g -> inline_cakeml_extraction (inline,[g]))
 
 (* const_name : qualid -> replacement : string*)
-let extract_constant_foreign r s =
+(* let extract_constant_foreign r s =
   if lang () != Ocaml then
-      CErrors.user_err (Pp.str "Extract Foreign Constant is supported only for OCaml extraction.");
+      CErrors.user_err (Pp.str "Extract Foreign Constant is supported only for OCaml cakeml_extraction.");
   let arity_handler env typ g =
       CErrors.user_err (Pp.str "Extract Foreign Constant is supported only for functions.")
   in
-  extract_constant_generic r [] s (arity_handler) (is_inline_custom, "inline") (fun g -> foreign_extraction [g])
+  extract_constant_generic r [] s (arity_handler) (is_inline_custom, "inline") (fun g -> foreign_cakeml_extraction [g]) *)
 
 
 let extract_inductive r s l optstr =
@@ -1005,14 +992,14 @@ let extract_inductive r s l optstr =
         let mib = Global.lookup_mind kn in
         let n = Array.length mib.mind_packets.(i).mind_consnames in
         if not (Int.equal n (List.length l)) then error_nb_cons ();
-        Lib.add_leaf (inline_extraction (true,[g]));
+        Lib.add_leaf (inline_cakeml_extraction (true,[g]));
         Lib.add_leaf (in_customs (g,[],s));
         Option.iter (fun s -> Lib.add_leaf (in_custom_matchs (g,s)))
           optstr;
         List.iteri
           (fun j s ->
              let g = GlobRef.ConstructRef (ip,succ j) in
-             Lib.add_leaf (inline_extraction (true,[g]));
+             Lib.add_leaf (inline_cakeml_extraction (true,[g]));
              Lib.add_leaf (in_customs (g,[],s))) l
     | _ -> error_inductive ?loc:r.CAst.loc g
 

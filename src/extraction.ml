@@ -38,12 +38,10 @@ let current_fixpoints = ref ([] : Constant.t list)
    in order to display the location of the issue. *)
 
 let type_of env sg c =
-  let polyprop = (lang() == Haskell) in
-  Retyping.get_type_of ~polyprop env sg (Termops.strip_outer_cast sg c)
+  Retyping.get_type_of ~polyprop:false env sg (Termops.strip_outer_cast sg c)
 
 let sort_of env sg c =
-  let polyprop = (lang() == Haskell) in
-  Retyping.get_sort_family_of ~polyprop env sg (Termops.strip_outer_cast sg c)
+  Retyping.get_sort_family_of ~polyprop:false env sg (Termops.strip_outer_cast sg c)
 
 (*S Generation of flags and signatures. *)
 
@@ -480,18 +478,7 @@ and extract_really_ind env kn mib =
        we process the original inductive if possible.
        When at toplevel of the monolithic case, we cannot do much
        (cf Vector and bug #2570) *)
-    let equiv =
-      if lang () != Ocaml ||
-         (not (modular ()) && at_toplevel (MutInd.modpath kn)) ||
-         KerName.equal (MutInd.canonical kn) (MutInd.user kn)
-      then
-        NoEquiv
-      else
-        begin
-          ignore (extract_ind env (MutInd.make1 (MutInd.canonical kn)));
-          Equiv (MutInd.canonical kn)
-        end
-    in
+    let equiv = NoEquiv in
     (* Everything concerning parameters. *)
     (* We do that first, since they are common to all the [mib]. *)
     let mip0 = mib.mind_packets.(0) in
@@ -674,7 +661,7 @@ let record_constant_type env sg kn opt_typ =
 (* Precondition: [(c args)] is not a type scheme, and is informative. *)
 
 (* [mle] is a ML environment [Mlenv.t]. *)
-(* [mlt] is the ML type we want our extraction of [(c args)] to have. *)
+(* [mlt] is the ML type we want our cakeml_extraction of [(c args)] to have. *)
 
 let rec extract_term env sg mle mlt c args =
   match EConstr.kind sg c with
@@ -809,10 +796,7 @@ and extract_cst_app env sg mle mlt kn args =
   let schema = nb, expand env t in
   (* Can we instantiate types variables for this constant ? *)
   (* In Ocaml, inside the definition of this constant, the answer is no. *)
-  let instantiated =
-    if lang () == Ocaml && List.exists (fun c -> QConstant.equal env kn c) !current_fixpoints
-    then var2var' (snd schema)
-    else instantiation schema
+  let instantiated = instantiation schema
   in
   (* Then the expected type of this constant. *)
   let a = new_meta () in
@@ -824,7 +808,7 @@ and extract_cst_app env sg mle mlt kn args =
   let magic2 = needs_magic (a, mlt) in
   (* The internal head receives a magic if [magic1] *)
   let head = put_magic_if magic1 (MLglob (GlobRef.ConstRef kn)) in
-  (* Now, the extraction of the arguments. *)
+  (* Now, the cakeml_extraction of the arguments. *)
   let s_full = type2signature env (snd schema) in
   let s_full = sign_with_implicits (GlobRef.ConstRef kn) s_full 0 in
   let s = sign_no_final_keeps s_full in
@@ -836,7 +820,7 @@ and extract_cst_app env sg mle mlt kn args =
      (except when [Kill Ktype] everywhere). So a [MLdummy] is left
      accordingly. *)
   let optdummy = match sign_kind s_full with
-    | UnsafeLogicalSig when lang () != Haskell -> [MLdummy Kprop]
+    | UnsafeLogicalSig -> [MLdummy Kprop]
     | _ -> []
   in
   (* Different situations depending of the number of arguments: *)
@@ -944,10 +928,10 @@ and extract_case env sg mle ((kn,i) as ip,c,br) mlt =
       let mi = extract_ind env kn in
       let oi = mi.ind_packets.(i) in
       let metas = Array.init (List.length oi.ip_vars) new_meta in
-      (* The extraction of the head. *)
+      (* The cakeml_extraction of the head. *)
       let type_head = Tglob (GlobRef.IndRef ip, Array.to_list metas) in
       let a = extract_term env sg mle type_head c [] in
-      (* The extraction of each branch. *)
+      (* The cakeml_extraction of each branch. *)
       let extract_branch i =
         let r = GlobRef.ConstructRef (ip,i+1) in
         (* The types of the arguments of the corresponding constructor. *)
@@ -1004,14 +988,14 @@ let decomp_lams_eta_n n m env sg c t =
 (* Let's try to identify some situation where extracted code
    will allow generalisation of type variables *)
 
-let rec gentypvar_ok sg c = match EConstr.kind sg c with
+(* let rec gentypvar_ok sg c = match EConstr.kind sg c with
   | Lambda _ | Const _ -> true
   | App (c,v) ->
       (* if all arguments are variables, these variables will
-         disappear after extraction (see [empty_s] below) *)
+         disappear after cakeml_extraction (see [empty_s] below) *)
       Array.for_all (EConstr.isRel sg) v && gentypvar_ok sg c
   | Cast (c,_,_) -> gentypvar_ok sg c
-  | _ -> false
+  | _ -> false *)
 
 (*s From a constant to a ML declaration. *)
 
@@ -1037,21 +1021,9 @@ let extract_std_constant env sg kn body typ =
     if n <= m then decompose_lambda_n sg n body
     else
       let s,s' = List.chop m s in
-      if List.for_all ((==) Keep) s' &&
-        (lang () == Haskell || sign_kind s != UnsafeLogicalSig)
+      if List.for_all ((==) Keep) s' && (sign_kind s != UnsafeLogicalSig)
       then decompose_lambda_n sg m body
       else decomp_lams_eta_n n m env sg body typ
-  in
-  (* Should we do one eta-expansion to avoid non-generalizable '_a ? *)
-  let rels, c =
-    let n = List.length rels in
-    let s,s' = List.chop n s in
-    let k = sign_kind s in
-    let empty_s = (k == EmptySig || k == SafeLogicalSig) in
-    if lang () == Ocaml && empty_s && not (gentypvar_ok sg c)
-      && not (List.is_empty s') && not (Int.equal (type_maxvar t) 0)
-    then decomp_lams_eta_n (n+1) n env sg body typ
-    else rels,c
   in
   let n = List.length rels in
   let s = List.firstn n s in
@@ -1063,7 +1035,7 @@ let extract_std_constant env sg kn body typ =
   let ids = List.map (fun (n,_) -> Id (id_of_name n.binder_name)) rels in
   (* The according Coq environment. *)
   let env = push_rels_assum rels env in
-  (* The real extraction: *)
+  (* The real cakeml_extraction: *)
   let e = extract_term env sg mle t' c [] in
   (* Expunging term and type from dummy lambdas. *)
   let trm = term_expunge s (ids,e) in

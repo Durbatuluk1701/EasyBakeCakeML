@@ -63,7 +63,7 @@ val labels_of_ref : GlobRef.t -> ModPath.t * Label.t list
 
 (*s Some table-related operations *)
 
-(* For avoiding repeated extraction of the same constant or inductive,
+(* For avoiding repeated cakeml_extraction of the same constant or inductive,
    we use cache functions below. Indexing by constant name isn't enough,
    due to modules we could have a same constant name but different
    content. So we check that the [constant_body] hasn't changed from
@@ -152,11 +152,6 @@ val conservative_types : unit -> bool
 
 val file_comment : unit -> string
 
-(*s Target language. *)
-
-type lang = Ocaml | Haskell | Scheme | JSON
-val lang : unit -> lang
-
 (*s Extraction modes: modular or monolithic, library or minimal ?
 
 Nota:
@@ -183,9 +178,9 @@ val to_keep : GlobRef.t -> bool
 
 val implicits_of_global : GlobRef.t -> Int.Set.t
 
-(*s Table for user-given custom ML extractions. *)
+(*s Table for user-given custom ML cakeml_extractions. *)
 
-(* UGLY HACK: registration of a function defined in [extraction.ml] *)
+(* UGLY HACK: registration of a function defined in [cakeml_extraction.ml] *)
 val type_scheme_nb_args_hook : (Environ.env -> Constr.t -> int) Hook.t
 
 val is_custom : GlobRef.t -> bool
@@ -200,31 +195,29 @@ val find_custom_match : ml_branch array -> string
 
 (*s Extraction commands. *)
 
-val extraction_language : lang -> unit
-val extraction_inline : bool -> qualid list -> unit
-val print_extraction_inline : unit -> Pp.t
-val print_extraction_foreign : unit -> Pp.t
-val print_extraction_callback : unit -> Pp.t
-val reset_extraction_inline : unit -> unit
-val reset_extraction_foreign : unit -> unit
-val reset_extraction_callback : unit -> unit
-val extract_callback : string option -> qualid -> unit
+val cakeml_extraction_inline : bool -> qualid list -> unit
+val print_cakeml_extraction_inline : unit -> Pp.t
+val print_cakeml_extraction_foreign : unit -> Pp.t
+val print_cakeml_extraction_callback : unit -> Pp.t
+val reset_cakeml_extraction_inline : unit -> unit
+val reset_cakeml_extraction_foreign : unit -> unit
+val reset_cakeml_extraction_callback : unit -> unit
+(* val extract_callback : string option -> qualid -> unit *)
 val extract_constant_inline :
   bool -> qualid -> string list -> string -> unit
-val extract_constant_foreign :
-  qualid -> string -> unit
+(* val extract_constant_foreign : qualid -> string -> unit *)
 val extract_inductive :
   qualid -> string -> string list -> string option -> unit
 
 
 type int_or_id = ArgInt of int | ArgId of Id.t
-val extraction_implicit : qualid -> int_or_id list -> unit
+val cakeml_extraction_implicit : qualid -> int_or_id list -> unit
 
 (*s Table of blacklisted filenames *)
 
-val extraction_blacklist : string list -> unit
-val reset_extraction_blacklist : unit -> unit
-val print_extraction_blacklist : unit -> Pp.t
+val cakeml_extraction_blacklist : string list -> unit
+val reset_cakeml_extraction_blacklist : unit -> unit
+val print_cakeml_extraction_blacklist : unit -> Pp.t
 
 
 

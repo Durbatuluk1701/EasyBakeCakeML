@@ -77,9 +77,9 @@ let struct_iter do_decl do_spec do_mp s =
 
 type do_ref = GlobRef.t -> unit
 
-let record_iter_references do_term = function
+(* let record_iter_references do_term = function
   | Record l -> List.iter (Option.iter do_term) l
-  | _ -> ()
+  | _ -> () *)
 
 let type_iter_references do_type t =
   let rec iter = function
@@ -116,14 +116,9 @@ let ind_iter_references do_term do_cons do_type kn ind =
   let cons_iter cp l = do_cons (GlobRef.ConstructRef cp); List.iter type_iter l in
   let packet_iter ip p =
     do_type (GlobRef.IndRef ip);
-    if lang () == Ocaml then
-      (match ind.ind_equiv with
-         | Miniml.Equiv kne -> do_type (GlobRef.IndRef (MutInd.make1 kne, snd ip));
-         | _ -> ());
     Array.iteri (fun j -> cons_iter (ip,j+1)) p.ip_types
   in
-  if lang () == Ocaml then record_iter_references do_term ind.ind_kind;
-    Array.iteri (fun i -> packet_iter (kn,i)) ind.ind_packets
+  Array.iteri (fun i -> packet_iter (kn,i)) ind.ind_packets
 
 let decl_iter_references do_term do_cons do_type =
   let type_iter = type_iter_references do_type
@@ -309,7 +304,7 @@ and optim_me to_appear s = function
   | MEfunctor (mbid,mt,me) -> MEfunctor (mbid,mt, optim_me to_appear s me)
 
 (* After these optimisations, some dependencies may not be needed anymore.
-   For non-library extraction, we recompute a minimal set of dependencies
+   For non-library cakeml_extraction, we recompute a minimal set of dependencies
    for first-level definitions (no module pruning yet). *)
 
 let base_r = let open GlobRef in function
@@ -336,7 +331,7 @@ let declared_refs = function
   | Dfix (rv,_,_) -> Array.to_list rv
 
 (* Computes the dependencies of a declaration, except in case
-   of custom extraction. *)
+   of custom cakeml_extraction. *)
 
 let compute_deps_decl = function
   | Dind (kn,ind) ->

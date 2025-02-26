@@ -97,9 +97,7 @@ let begins_with_CoqXX s =
   done; true
   with Not_found -> false
 
-let unquote s =
-  if lang () != Scheme then s
-  else String.map (fun c -> if c == '\'' then '~' else c) s
+let unquote s = s
 
 let rec qualify delim = function
   | [] -> assert false
@@ -136,8 +134,7 @@ end
 module KMap = Map.Make(KOrd)
 
 let upperkind = function
-  | Type -> lang () == Haskell
-  | Term -> false
+  | Type | Term -> false
   | Cons | Mod -> true
 
 let kindcase_id k id =
@@ -345,7 +342,7 @@ let modular_rename k id =
   then prefix ^ s
   else s
 
-(*s For monolithic extraction, first-level modules might have to be renamed
+(*s For monolithic cakeml_extraction, first-level modules might have to be renamed
     with unique numbers *)
 
 let modfstlev_rename =
@@ -400,7 +397,7 @@ and mp_renaming =
 let ref_renaming_fun (k,r) =
   let mp = modpath_of_r r in
   let l = mp_renaming mp in
-  let l = if lang () != Ocaml && not (modular ()) then [""] else l in
+  let l = if not (modular ()) then [""] else l in
   let s =
     let idg = safe_basename_of_global r in
     match l with
@@ -495,7 +492,7 @@ let opened_libraries () =
     List.iter mpfiles_add to_open;
     mpfiles_list ()
 
-(*s On-the-fly qualification issues for both monolithic or modular extraction. *)
+(*s On-the-fly qualification issues for both monolithic or modular cakeml_extraction. *)
 
 (* [pp_ocaml_gen] below is a function that factorize the printing of both
    [global_reference] and module names for ocaml. When [k=Mod] then [olab=None],
@@ -602,7 +599,7 @@ let pp_global_name k r =
   assert (List.length ls > 1);
   List.hd ls
 
-(* The next function is used only in Ocaml extraction...*)
+(* The next function is used only in Ocaml cakeml_extraction...*)
 
 let pp_module mp =
   let ls = mp_renaming mp in
@@ -699,7 +696,7 @@ let rec is_native_string_rec empty_string_ref string_constructor_ref = function
   | _ -> false
 
 (* Here we first check that the argument is the type registered as
-   core.string.type and that extraction to native strings was
+   core.string.type and that cakeml_extraction to native strings was
    requested.  Then we check every character via
    [is_native_string_rec]. *)
 

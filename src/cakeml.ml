@@ -571,7 +571,7 @@ let do_struct f s =
   let ppl (mp,sel) =
     push_visible mp [];
     let p = prlist_sep_nonempty cut2 f sel in
-    (* for monolithic extraction, we try to simulate the unavailability
+    (* for monolithic cakeml_extraction, we try to simulate the unavailability
        of [MPfile] in names by artificially nesting these [MPfile] *)
     (if modular () then pop_visible ()); p
   in

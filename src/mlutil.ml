@@ -129,7 +129,7 @@ let rec mgu = function
   | Taxiom, Taxiom -> ()
   | _ -> raise Impossible
 
-let skip_typing () = lang () == Scheme || is_extrcompute ()
+let skip_typing () = is_extrcompute ()
 
 let needs_magic p =
   if skip_typing () then false
@@ -139,11 +139,7 @@ let put_magic_if b a = if b then MLmagic a else a
 
 let put_magic p a = if needs_magic p then MLmagic a else a
 
-let generalizable a =
-  lang () != Ocaml ||
-    match a with
-      | MLapp _ -> false
-      | _ -> true (* TODO, this is just an approximation for the moment *)
+let generalizable a = true
 
 (*S ML type env. *)
 
@@ -353,8 +349,8 @@ let type_expunge_from_sign env s t =
     | _ -> assert false
   in
   let t = expunge (sign_no_final_keeps s) t in
-  if lang () != Haskell && sign_kind s == UnsafeLogicalSig then
-    Tarr (Tdummy Kprop, t)
+  if sign_kind s == UnsafeLogicalSig 
+  then Tarr (Tdummy Kprop, t)
   else t
 
 let type_expunge env t =
@@ -1097,7 +1093,6 @@ let rec simpl o = function
   | MLmagic(MLcase(typ,e,br)) ->
      let br' = Array.map (fun (ids,p,c) -> (ids,p,MLmagic c)) br in
      simpl o (MLcase(typ,e,br'))
-  | MLmagic(MLdummy _ as e) when lang () == Haskell -> e
   | MLmagic(MLexn _ as e) -> e
   | MLlam _ as e ->
      (match atomic_eta_red e with
@@ -1154,7 +1149,7 @@ and simpl_case o typ br e =
       simpl o (named_lams ids (MLcase (typ, ast_lift n e, br)))
     else
       (* Can we merge several branches as the same constant or function ? *)
-      if lang() == Scheme || is_custom_match br
+      if is_custom_match br
       then MLcase (typ, e, br)
       else match factor_branches o typ br with
         | Some (f,ints) when Int.equal (Int.Set.cardinal ints) (Array.length br) ->
@@ -1274,8 +1269,7 @@ let term_expunge s (ids,c) =
   if List.is_empty s then c
   else
     let ids,c = kill_some_lams (List.rev s) (ids,c) in
-    if List.is_empty ids && lang () != Haskell &&
-       sign_kind s == UnsafeLogicalSig
+    if List.is_empty ids && sign_kind s == UnsafeLogicalSig
     then MLlam (Dummy, ast_lift 1 c)
     else named_lams ids c
 
@@ -1569,7 +1563,6 @@ let inline r t =
   not (to_keep r) (* The user DOES want to keep it *)
   && not (is_inline_custom r)
   && (to_inline r (* The user DOES want to inline it *)
-     || (lang () != Haskell &&
-         (is_projection r || is_recursor r ||
+     || ((is_projection r || is_recursor r ||
           manual_inline r || inline_test r t)))
 

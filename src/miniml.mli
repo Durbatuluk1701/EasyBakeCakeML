@@ -8,7 +8,7 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-(*s Target language for extraction: a core ML called MiniML. *)
+(*s Target language for cakeml_extraction: a core ML called MiniML. *)
 
 open Names
 
@@ -108,7 +108,7 @@ type ml_ident =
 (** Nota : the constructor [MLtuple] and the extension of [MLcase]
     to general patterns have been proposed by P.N. Tollitte for
     his Relation Extraction plugin. [MLtuple] is currently not
-    used by the main extraction, as well as deep patterns. *)
+    used by the main cakeml_extraction, as well as deep patterns. *)
 
 type ml_branch = ml_ident list * ml_pattern * ml_ast
 

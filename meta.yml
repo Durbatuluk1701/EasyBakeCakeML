@@ -51,6 +51,8 @@ community: false # By default projects are not part of coq-community
 coqdoc: true # By default we want coqdoc
 submodule: false # By default we don't want submodules
 dune: true # By default we want dune builds
+ocaml_plugin: false # By default we don't assume plugins to use ocaml code
+
 # date: # by default we arent setting a date
 
 # Extra Metadata

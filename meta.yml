@@ -63,5 +63,5 @@ supported_coq_versions:
   - text: "8.20"
     opam: '{ == "8.20~" }'
 supported_ocaml_versions:
-  - text: "5.3 or later"
-    opam: '{ >= "5.3~" }'
+  - text: "4.13 or later"
+    opam: '{ >= "4.13~" }'

@@ -23,7 +23,7 @@ An extraction plugin for CakeML that does not require any semantic preservation 
   - Will Thomas
 - License: [Creative Commons Attribution Share Alike 4.0 International](LICENSE)
 - Compatible Coq versions: 8.20
-- Compatible OCaml versions: 5.3 or later
+- Compatible OCaml versions: 4.13 or later
 - Additional dependencies:
   - [Dune](https://dune.build) 3.17 or later
 - Related publication(s): none

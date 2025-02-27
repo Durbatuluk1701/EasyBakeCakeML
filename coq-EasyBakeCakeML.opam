@@ -17,8 +17,8 @@ An extraction plugin for CakeML that does not require any semantic preservation 
 
 build: ["dune" "build" "-p" name "-j" jobs]
 depends: [
-  "ocaml" { >= "4.12~" }
-  "dune" {>= "3.6"}
+  "ocaml" { >= "5.3~" }
+  "dune" {>= "3.17"}
   "coq" 
 ]
 

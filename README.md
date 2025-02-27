@@ -22,10 +22,10 @@ An extraction plugin for CakeML that does not require any semantic preservation 
 - Author(s):
   - Will Thomas
 - License: [Creative Commons Attribution Share Alike 4.0 International](LICENSE)
-- Compatible Coq versions: 8.18 or later
-- Compatible OCaml versions: 4.12 or later
+- Compatible Coq versions: 8.20
+- Compatible OCaml versions: 5.3 or later
 - Additional dependencies:
-  - [Dune](https://dune.build) 3.6 or later
+  - [Dune](https://dune.build) 3.17 or later
 - Related publication(s): none
 
 ## Building and installation instructions

@@ -11,6 +11,7 @@
 (* Extraction to CakeML : extract ascii to CakeML's char type *)
 
 Require Coq.extraction.Extraction.
+Require Export EasyBakeCakeML.
 
 Require Import Ascii String Coq.Strings.Byte.
 Require Export ExtrCakeMLBasic.

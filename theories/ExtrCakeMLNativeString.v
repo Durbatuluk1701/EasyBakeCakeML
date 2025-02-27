@@ -12,6 +12,7 @@
    as well as extracting strings to CakeML's string type. *)
 
 Require Coq.extraction.Extraction.
+Require Export EasyBakeCakeML.
 
 Require Import Ascii String Coq.Strings.Byte.
 Require Export ExtrCakeMLChar.

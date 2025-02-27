@@ -9,6 +9,7 @@
 (************************************************************************)
 
 Require Coq.extraction.Extraction.
+Require Export EasyBakeCakeML.
 
 (** Extraction to CakeML : use the basic CakeML types *)
 

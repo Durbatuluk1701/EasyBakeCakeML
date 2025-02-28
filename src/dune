@@ -1,9 +1,12 @@
+; This file was generated from `meta.yml`, please do not edit manually.
+; Follow the instructions on https://github.com/coq-community/templates to regenerate.
+
 (library
- (name coq_easybakecakeml)
+ (name coq_EasyBakeCakeML)
  (public_name coq-EasyBakeCakeML.plugin)
- (synopsis "A plugin for the EasyBakeCakeML project")
+ (synopsis "An extraction plugin for CakeML")
  (flags (:standard -w -9-27))
  (libraries coq-core.vernac coq-core.lib coq-core.plugins.extraction)
- (modules (:standard)))
-
+ (modules (:standard))
+)
 (coq.pp (modules g_extraction))

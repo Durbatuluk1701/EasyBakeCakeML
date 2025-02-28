@@ -54,6 +54,12 @@ coqdoc: false # By default we want coqdoc
 submodule: false # By default we don't want submodules
 dune: true # By default we want dune builds
 ocaml_plugin: true # By default we don't assume plugins to use ocaml code
+ocaml_libraries:
+  - name: "coq-core.vernac"
+  - name: "coq-core.lib"
+  - name: "coq-core.plugins.extraction"
+ocaml_coq_pp_files:
+  - name: "g_extraction"
 
 # date: # by default we arent setting a date
 

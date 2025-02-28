@@ -6,7 +6,7 @@ shortname: EasyBakeCakeML # NOTE: This is the library name that other projects w
 synopsis: "An extraction plugin for CakeML"
 description: "An extraction plugin for CakeML that does not require any semantic preservation proofs."
 authors:
-  - name: "T.J. Barclay"
+  - name: "TJ Barclay"
   - name: "Will Thomas"
     email: "30wthomas@ku.edu"
 opam-file-maintainer: "30wthomas@ku.edu" # Need a strong default here or we will accidentally email a Coq developer

@@ -17,7 +17,7 @@ An extraction plugin for CakeML that does not require any semantic preservation 
 ## Meta
 
 - Author(s):
-  - T.J. Barclay
+  - TJ Barclay
   - Will Thomas
 - License: [Creative Commons Attribution Share Alike 4.0 International](LICENSE)
 - Compatible Coq versions: 8.20

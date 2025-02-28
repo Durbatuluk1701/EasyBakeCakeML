@@ -1,10 +1,12 @@
 ---
 # This file is used to configure the project metadata
 fullname: Easy Bake CakeML - CakeML Extraction Plugin
+# NOTE: The shortname is also the REPOSITORY NAME!!!
 shortname: EasyBakeCakeML # NOTE: This is the library name that other projects will use to depend on/import from this project
 synopsis: "An extraction plugin for CakeML"
 description: "An extraction plugin for CakeML that does not require any semantic preservation proofs."
 authors:
+  - name: "T.J. Barclay"
   - name: "Will Thomas"
     email: "30wthomas@ku.edu"
 opam-file-maintainer: "30wthomas@ku.edu" # Need a strong default here or we will accidentally email a Coq developer
@@ -18,6 +20,9 @@ opam-file-maintainer: "30wthomas@ku.edu" # Need a strong default here or we will
 # keywords:
 #   - name: "<Keyword1>"
 #   - name: "<Keyword2>"
+keywords:
+  - name: "CakeML"
+  - name: "Extraction"
 
 ######################################################
 # NOTE: Stuff below this line you should not need to change
@@ -25,7 +30,7 @@ opam-file-maintainer: "30wthomas@ku.edu" # Need a strong default here or we will
 # NOTE: check out https://github.com/coq-community/templates/blob/master/ref.yml for more possible values
 
 branch: main
-organization: ku-sldg
+organization: Durbatuluk1701
 # opam_name: <opam-name i.e. coq-<project-short-name>> # i.e. coq-Base64
 
 # CI services - we only want GH Actions by default
@@ -45,10 +50,10 @@ tested_coq_opam_versions:
 # Config Options
 sldg_dev_pkgs_needed: true
 community: false # By default projects are not part of coq-community
-coqdoc: true # By default we want coqdoc
+coqdoc: false # By default we want coqdoc
 submodule: false # By default we don't want submodules
 dune: true # By default we want dune builds
-ocaml_plugin: false # By default we don't assume plugins to use ocaml code
+ocaml_plugin: true # By default we don't assume plugins to use ocaml code
 
 # date: # by default we arent setting a date
 

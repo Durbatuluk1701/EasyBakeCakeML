@@ -5,10 +5,9 @@ opam-version: "2.0"
 maintainer: "30wthomas@ku.edu"
 version: "dev"
 
-homepage: "https://github.com/ku-sldg/EasyBakeCakeML"
-dev-repo: "git+https://github.com/ku-sldg/EasyBakeCakeML.git"
-bug-reports: "https://github.com/ku-sldg/EasyBakeCakeML/issues"
-doc: "https://ku-sldg.github.io/EasyBakeCakeML/"
+homepage: "https://github.com/Durbatuluk1701/EasyBakeCakeML"
+dev-repo: "git+https://github.com/Durbatuluk1701/EasyBakeCakeML.git"
+bug-reports: "https://github.com/Durbatuluk1701/EasyBakeCakeML/issues"
 license: "CC-BY-SA-4.0"
 
 synopsis: "An extraction plugin for CakeML"
@@ -23,8 +22,11 @@ depends: [
 ]
 
 tags: [
+  "keyword:CakeML"
+  "keyword:Extraction"
   "logpath:EasyBakeCakeML"
 ]
 authors: [
+  "T.J. Barclay"
   "Will Thomas <30wthomas@ku.edu>"
 ]

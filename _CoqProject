@@ -1,1 +1,2 @@
--Q _build/default/theories EasyBakeCakeML
+-R _build/default/theories EasyBakeCakeML
+-I _build/install/default/lib

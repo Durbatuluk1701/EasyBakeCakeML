@@ -19,7 +19,10 @@ jobs:
     strategy:
       matrix:
         image:
+          - 'coqorg/coq:8.18'
+          - 'coqorg/coq:8.19'
           - 'coqorg/coq:8.20'
+          - 'coqorg/coq:dev'
       fail-fast: false
     steps:
       - uses: actions/checkout@v4

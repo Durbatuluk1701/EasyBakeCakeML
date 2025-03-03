@@ -43,7 +43,10 @@ ci_test_dependants: false
 ci_extra_dev: false
 ci_cron_schedule: 0 0 * * 0 # Weekly at midnight sunday
 tested_coq_opam_versions:
+  - version: "8.18"
+  - version: "8.19"
   - version: "8.20"
+  - version: "dev"
 
 ## UNKNOWN: action_appendix:
 

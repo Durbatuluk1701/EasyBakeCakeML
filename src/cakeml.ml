@@ -75,6 +75,9 @@ let pp_mldummy usf =
   else mt ()
 
 let preamble _ comment used_modules usf =
+  (if (List.length used_modules > 0)
+  then (str "(* deps: " ++ prlist (fun mp -> (str (string_of_modfile mp) ++ str " ")) used_modules ++ str " *)" ++ fnl () ++ fnl ())
+  else mt ()) ++
   pp_header_comment comment ++
   then_nl (pp_tdummy usf ++ pp_mldummy usf)
 

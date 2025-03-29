@@ -10,11 +10,11 @@
 
 (* Extraction to CakeML : extract ascii to CakeML's char type *)
 
-Require Coq.extraction.Extraction.
-Require Export EasyBakeCakeML.
+From Coq Require extraction.Extraction.
+From EasyBakeCakeML Require Export EasyBakeCakeML.
 
-Require Import Ascii String Coq.Strings.Byte.
-Require Export ExtrCakeMLBasic.
+From Coq Require Import Ascii String Strings.Byte.
+From EasyBakeCakeML Require Export ExtrCakeMLBasic.
 
 Extract Inductive ascii => char
 [

@@ -68,7 +68,7 @@ version:
 	git add $(META_FILE) *.opam ; \
 	git commit -m "Version $$VERSION" ; \
 	git tag -a v$$VERSION -m "Version $$VERSION" ; \
-	git push --tags
+	git push && git push --tags
 
 publish%:
 # First, we set a new version number

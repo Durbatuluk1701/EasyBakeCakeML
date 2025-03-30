@@ -31,16 +31,21 @@ Extract Inductive ascii => char
   f (h 0) (h 1) (h 2) (h 3) (h 4) (h 5) (h 6) (h 7)
   end end)".
 
-Extract Constant zero => "Char.fromByte (Word8.fromInt 0))".
-Extract Constant one => "Char.fromByte (Word8.fromInt 1))".
+Extract Constant zero => "(Char.fromByte (Word8.fromInt 0))".
+Extract Constant one => "(Char.fromByte (Word8.fromInt 1))".
 
 Extract Inlined Constant ascii_dec => "(op=)".
 Extract Inlined Constant Ascii.eqb => "(op=)".
-Extract Constant Ascii.compare =>
-  "fn c1 => fn c2 =>
-    let cmp = Char.compare c1 c2 in
-    if cmp < 0 then Less else if cmp = 0 then Equal else Greater
-    end".
+Extract Inlined Constant Ascii.compare => "(fn c1 => fn c2 =>
+    let 
+      val cmp = Char.compare c1 c2 
+    in
+      if cmp < 0 
+      then Less 
+      else if cmp = 0 
+      then Equal 
+      else Greater
+    end)".
 
 (* Extraction to CakeML : extract byte to CakeML's Word8 type *)
 

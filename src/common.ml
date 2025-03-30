@@ -111,7 +111,7 @@ let dottify = qualify "."
 (*s Uppercase/lowercase renamings. *)
 
 let is_upper s = match s.[0] with 'A' .. 'Z' -> true | _ -> false
-let is_lower s = match s.[0] with 'a' .. 'z' | '_' -> true | _ -> false
+let is_lower s = match s.[0] with 'a' .. 'z' -> true | _ -> false
 
 let lowercase_id id = Id.of_string (String.uncapitalize_ascii (ascii_of_id id))
 let uppercase_id id =
@@ -338,10 +338,9 @@ let modular_rename k id =
   let s = ascii_of_id id in
   let prefix,is_ok = if upperkind k then "Coq_",is_upper else "coq_",is_lower
   in
-  let magic_prefix = "Coq_" in
   if not (is_ok s) || Id.Set.mem id (get_keywords ()) || begins_with s prefix
-  then magic_prefix ^ prefix ^ s
-  else magic_prefix ^ s
+  then prefix ^ s
+  else s
 
 (*s For monolithic cakeml_extraction, first-level modules might have to be renamed
     with unique numbers *)

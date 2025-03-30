@@ -50,7 +50,9 @@ let keywords =
       "if"; "in"; "include"; "let"; "local"; "of"; "op"; "open"; "orelse";
       "raise"; "rec"; "sharing"; "sig"; "signature"; "struct"; "structure";
       "then"; "type"; "val"; "where"; "with"; "withtype";
-      "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr" ; "unit" ; "_" ; "ml___dummy" ]
+      "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr" ; "unit" ; "_" ; "ml___dummy";
+      "div"
+       ]
     Id.Set.empty
 
 (* Note: do not shorten [str "foo" ++ fnl ()] into [str "foo\n"],

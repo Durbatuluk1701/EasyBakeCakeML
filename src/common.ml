@@ -662,8 +662,8 @@ let pp_native_char c = str ("'"^Char.escaped (get_native_char c)^"'")
 let pp_native_char_cakeml c = 
     (* Special cases for CakeML, chars act a little funny and don't support all escape sequences *)
     match get_native_char c with
-    | '\b'  -> str ("#\"\008\"")
-    | '\r'  -> str ("#\"\013\"")
+    | '\b'  -> str ("#\"\\008\"")
+    | '\r'  -> str ("#\"\\013\"")
     | '"'   -> str ("#\"\\\"\"")
     | _     -> str ("#\""^Char.escaped (get_native_char c)^"\"")
 

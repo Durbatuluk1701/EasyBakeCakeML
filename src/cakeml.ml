@@ -374,7 +374,7 @@ and pp_function env t =
 
 and pp_fix par env i (ids,bl) args =
   pp_par par
-    (v 0 (str "fun " ++
+    (v 0 (str "2fun " ++
           prvect_with_sep
             (fun () -> fnl () ++ str "and ")
             (fun (fi,ti) -> Id.print fi ++ pp_function env ti)

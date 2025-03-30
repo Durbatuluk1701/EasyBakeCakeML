@@ -338,9 +338,10 @@ let modular_rename k id =
   let s = ascii_of_id id in
   let prefix,is_ok = if upperkind k then "Coq_",is_upper else "coq_",is_lower
   in
+  let magic_prefix = "Coq_" in
   if not (is_ok s) || Id.Set.mem id (get_keywords ()) || begins_with s prefix
-  then prefix ^ s
-  else s
+  then magic_prefix ^ prefix ^ s
+  else magic_prefix ^ s
 
 (*s For monolithic cakeml_extraction, first-level modules might have to be renamed
     with unique numbers *)

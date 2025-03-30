@@ -71,7 +71,7 @@ let pp_tdummy usf =
 (* Bad probably*)
 let pp_mldummy usf =
   if usf.mldummy then
-    str "let ml__dummy = let rec f _ = f in f" ++ fnl ()
+    str "val ml__dummy = ()" ++ fnl ()
   else mt ()
 
 let preamble _ comment used_modules usf =

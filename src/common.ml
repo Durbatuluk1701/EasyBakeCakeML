@@ -660,11 +660,12 @@ let get_native_char c =
 
 let pp_native_char c = str ("'"^Char.escaped (get_native_char c)^"'")
 let pp_native_char_cakeml c = 
-    (* NOTE: We know this is CakeML, but we use ocaml one! *)
-    if (get_native_char c = '"')
-    (* Special case, cakeml chars act a little funny *)
-    then str ("#\"\\\"\"")
-    else str ("#\""^Char.escaped (get_native_char c)^"\"")
+    (* Special cases for CakeML, chars act a little funny and don't support all escape sequences *)
+    match get_native_char c with
+    | '\b'  -> str ("#\"\008\"")
+    | '\r'  -> str ("#\"\013\"")
+    | '"'   -> str ("#\"\\\"\"")
+    | _     -> str ("#\""^Char.escaped (get_native_char c)^"\"")
 
 (** Special hack for constants of type String.string : if an
     [Extract Inductive string => string] has been declared, then

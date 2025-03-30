@@ -147,7 +147,13 @@ type env = Id.t list * Id.Set.t
 (*s Generic renaming issues for local variable names. *)
 
 let rec rename_id id avoid =
-  if Id.Set.mem id avoid then rename_id (increment_subscript id) avoid else id
+  let id_str = Id.to_string id in
+  let new_id = Id.of_string (if String.is_prefix "_" id_str
+                then "coq_" ^ id_str
+                else id_str) in 
+  (if Id.Set.mem new_id avoid 
+  then rename_id (increment_subscript new_id) avoid 
+  else new_id)
 
 let rec rename_vars avoid = function
   | [] ->

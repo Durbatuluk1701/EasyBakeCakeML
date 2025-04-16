@@ -374,13 +374,13 @@ and pp_function env t =
 
 and pp_fix par env i (ids,bl) args =
   pp_par par
-    (v 0 (str "2fun " ++
+    (v 0 (str "let fun " ++
           prvect_with_sep
             (fun () -> fnl () ++ str "and ")
             (fun (fi,ti) -> Id.print fi ++ pp_function env ti)
             (Array.map2 (fun id b -> (id,b)) ids bl) ++
           fnl () ++
-          hov 2 (str "in " ++ pp_apply (Id.print ids.(i)) false args)))
+          hov 2 (str "in " ++ pp_apply (Id.print ids.(i)) false args ++ fnl() ++ str " end")))
 
 (* Ad-hoc double-newline in v boxes, with enough negative whitespace
    to avoid indenting the intermediate blank line *)

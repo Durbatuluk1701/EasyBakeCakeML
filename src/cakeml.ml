@@ -51,7 +51,7 @@ let keywords =
       "raise"; "rec"; "sharing"; "sig"; "signature"; "struct"; "structure";
       "then"; "type"; "val"; "where"; "with"; "withtype";
       "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr" ; "unit" ; "_" ; "ml___dummy";
-      "div"
+      "div"; "o"
        ]
     Id.Set.empty
 

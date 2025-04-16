@@ -38,10 +38,10 @@ Extract Inlined Constant ascii_dec => "(op=)".
 Extract Inlined Constant Ascii.eqb => "(op=)".
 Extract Inlined Constant Ascii.compare => "(fn c1 => fn c2 =>
     if Char.< c1 c2
-    then Less
+    then Lt
     else if Char.> c1 c2
-    then Greater
-    else Equal)".
+    then Gt
+    else Eq)".
 
 (* Extraction to CakeML : extract byte to CakeML's Word8 type *)
 

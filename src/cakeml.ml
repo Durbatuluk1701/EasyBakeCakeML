@@ -23,12 +23,25 @@ open Common
 
 (*s Some utility functions. *)
 
+let keywords =
+  List.fold_right (fun s -> Id.Set.add (Id.of_string s))
+    [ "and"; "andalso"; "as"; "case"; "datatype";
+      "else"; "end"; "eqtype"; "exception"; "fn"; "fun"; "handle";
+      "if"; "in"; "include"; "let"; "local"; "of"; "op"; "open"; "orelse";
+      "raise"; "rec"; "sharing"; "sig"; "signature"; "struct"; "structure";
+      "then"; "type"; "val"; "where"; "with"; "withtype";
+      "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr" ; "unit" ; "_" ; "ml___dummy";
+      "div"; "o"
+       ]
+    Id.Set.empty
+
 let pp_tvar id = str ("'" ^ Id.to_string id)
 
 let pp_abst = function
   | [] -> mt ()
   | l  ->
-    str "fn " ++ prlist_with_sep (fun () -> str " => fn ") Id.print l ++
+    let (new_l, new_keys) = rename_vars keywords l in
+    str "fn " ++ prlist_with_sep (fun () -> str " => fn ") Id.print new_l ++
     str " =>" ++ spc ()
 
 let pp_parameters l =
@@ -42,18 +55,6 @@ let pp_letin pat def body =
   hv 0 (hv 0 (hov 2 fstline ++ spc () ++ str "in") ++ spc () ++ hov 0 body ++ str " end")
 
 (*s Ocaml renaming issues. *)
-
-let keywords =
-  List.fold_right (fun s -> Id.Set.add (Id.of_string s))
-    [ "and"; "andalso"; "as"; "case"; "datatype";
-      "else"; "end"; "eqtype"; "exception"; "fn"; "fun"; "handle";
-      "if"; "in"; "include"; "let"; "local"; "of"; "op"; "open"; "orelse";
-      "raise"; "rec"; "sharing"; "sig"; "signature"; "struct"; "structure";
-      "then"; "type"; "val"; "where"; "with"; "withtype";
-      "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr" ; "unit" ; "_" ; "ml___dummy";
-      "div"; "o"
-       ]
-    Id.Set.empty
 
 (* Note: do not shorten [str "foo" ++ fnl ()] into [str "foo\n"],
    the '\n' character interacts badly with the Format boxing mechanism *)

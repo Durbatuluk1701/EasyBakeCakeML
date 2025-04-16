@@ -159,8 +159,8 @@ let pp_type par vl t =
     | Tarr (t1,t2) ->
       pp_par par
         (pp_rec true t1 ++ spc () ++ str "->" ++ spc () ++ pp_rec false t2)
-    | Tdummy _ -> str "1ml___dummy"
-    | Tunknown -> str "2ml___dummy"
+    | Tdummy _ -> str "ml___dummy"
+    | Tunknown -> str "ml___dummy"
   in
   hov 0 (pp_rec par t)
 
@@ -214,7 +214,7 @@ let rec pp_expr par env args =
     let id = get_db_name n env in
     (* Try to survive to the occurrence of a Dummy rel.
        TODO: we should get rid of this hack (cf. #592) *)
-    let id = if Id.equal id dummy_name then Id.of_string "5ml___dummy" else id in
+    let id = if Id.equal id dummy_name then Id.of_string "ml___dummy" else id in
     apply (Id.print id)
   | MLapp (f,args') ->
     let stl = List.map (pp_expr true env []) args' in
@@ -241,8 +241,8 @@ let rec pp_expr par env args =
   | MLdummy k ->
     (* An [MLdummy] may be applied, but I don't really care. *)
     (match msg_of_implicit k with
-     | "" -> str "6ml___dummy"
-     | s -> str "7ml___dummy" ++ spc () ++ str ("(* "^s^" *)"))
+     | "" -> str "ml___dummy"
+     | s -> str "ml___dummy" ++ spc () ++ str ("(* "^s^" *)"))
   | MLmagic a -> pp_expr true env args a
   | MLaxiom s ->
     pp_par par (str "failwith \"AXIOM TO BE REALIZED (" ++ str s ++ str ")\"")
@@ -462,11 +462,11 @@ let pp_singleton kn packet =
 let pp_coind pl name =
   let pl = rename_tvars keywords pl in
   pp_parameters pl ++ name ++ str " = " ++
-  pp_parameters pl ++ str "3ml___dummy" ++ name ++ str " Lazy.t" ++
+  pp_parameters pl ++ str "Ml___dummy" ++ name ++ str " Lazy.t" ++
   fnl() ++ str "and "
 
 let pp_ind co kn ind =
-  let prefix = if co then "4ml___dummy" else "" in
+  let prefix = if co then "Ml___dummy" else "" in
   let initkwd = str "datatype " in
   let nextkwd = fnl () ++ str "and " in
   let names =

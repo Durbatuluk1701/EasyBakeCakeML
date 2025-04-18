@@ -11,8 +11,14 @@ Extract Inductive nat => "int"
 ]
 "(* If this appears, you're using Nat internals. Please don't *)
   (fn f0 => fn f1 => fn n =>
-    let fun h 0 = f0 () | h n = f1 (h (n - 1))
-    in h n end)
+    let 
+      fun h n =
+        if n = 0
+        then f0 ()
+        else f1 (h (n - 1))
+    in 
+      h n 
+    end)
 "
 .
 

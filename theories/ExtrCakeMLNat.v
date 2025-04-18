@@ -16,9 +16,9 @@ Extract Inductive nat => "int"
 "
 .
 
-Extract Inlined Constant Nat.add => "(+)".
+Extract Inlined Constant Nat.add => "Int.+".
 Extract Inlined Constant Nat.sub => "(fn n => fn m => if n < m then 0 else n - m)".
-Extract Inlined Constant Nat.mul => "(*)" .
+Extract Inlined Constant Nat.mul => "Int.*" .
 Extract Inlined Constant Nat.div => "(fn n => fn m => if m = 0 then 0 else n div m)".
 Extract Inlined Constant Nat.modulo => "(fn n => fn m => if m = 0 then 0 else n mod m)".
 Extract Inlined Constant Nat.eqb => "(op=)".

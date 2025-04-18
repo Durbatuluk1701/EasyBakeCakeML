@@ -14,8 +14,8 @@ Extract Inductive nat => "int"
     let 
       fun h n =
         if n = 0
-        then f0 ()
-        else f1 (h (n - 1))
+        then f0 0
+        else f1 (n - 1)
     in 
       h n 
     end)

@@ -3,7 +3,7 @@
 
 opam-version: "2.0"
 maintainer: "30wthomas@ku.edu"
-version: "0.3.0"
+version: "0.4.0"
 
 homepage: "https://github.com/Durbatuluk1701/EasyBakeCakeML"
 dev-repo: "git+https://github.com/Durbatuluk1701/EasyBakeCakeML.git"

@@ -11,10 +11,10 @@
 (* Extraction to CakeML : does everything in ExtrCakeMLChar.v 
    as well as extracting strings to CakeML's string type. *)
 
-From Coq Require extraction.Extraction.
+From Corelib Require extraction.Extraction.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 
-From Coq Require Import Ascii String Strings.Byte.
+From Stdlib Require Import Ascii String Strings.Byte.
 From EasyBakeCakeML Require Export ExtrCakeMLChar.
 
 (* This differs from ExtrCakeMLString.v as we have not made one yet, and frankly dont plan on ever *) 

@@ -375,7 +375,7 @@ let warning_opaques accessed =
     else warn_cakeml_extraction_opaque_as_axiom lst
 
 let warning_ambiguous_name =
-  CWarnings.create ~name:"cakeml_extraction-ambiguous-name" ~category:cake_extr_warnings
+  CWarnings.create_with_quickfix ~name:"cakeml_extraction-ambiguous-name" ~category:cake_extr_warnings
     (fun (q,mp,r) -> strbrk "The name " ++ pr_qualid q ++ strbrk " is ambiguous, " ++
                        strbrk "do you mean module " ++
                        pr_long_mp mp ++
@@ -383,6 +383,11 @@ let warning_ambiguous_name =
                        pr_long_global r ++ str " ?" ++ fnl () ++
                        strbrk "First choice is assumed, for the second one please use " ++
                        strbrk "fully qualified name." ++ fnl ())
+
+let warning_ambiguous_name ?loc (_,mp,r as x) =
+  match loc with
+  | None -> warning_ambiguous_name x
+  | Some loc -> warning_ambiguous_name ~loc ~quickfix:(List.map (Quickfix.make ~loc) [pr_long_mp mp;pr_long_global r]) x
 
 let error_axiom_scheme ?loc r i =
   err ?loc (str "The type scheme axiom " ++ spc () ++
@@ -421,15 +426,9 @@ let error_no_module_expr mp =
        ++ str "some Declare Module outside any Module Type.\n"
        ++ str "This situation is currently unsupported by the cakeml_extraction.")
 
-let error_singleton_become_prop id og =
-  let loc =
-    match og with
-    | Some g -> fnl () ++ str "in " ++ safe_pr_global g ++
-                str " (or in its mutual block)"
-    | None -> mt ()
-  in
-  err (str "The informative inductive type " ++ Id.print id ++
-       str " has a Prop instance" ++ loc ++ str "." ++ fnl () ++
+let error_singleton_become_prop ind =
+  err (str "The informative inductive type " ++ safe_pr_global (IndRef ind) ++
+       str " has a Prop instance" ++ str "." ++ fnl () ++
        str "This happens when a sort-polymorphic singleton inductive type\n" ++
        str "has logical parameters, such as (I,I) : (True * True) : Prop.\n" ++
        str "Extraction cannot handle this situation yet.\n" ++

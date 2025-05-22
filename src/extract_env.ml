@@ -163,11 +163,11 @@ let vm_state =
   let vm_handler _ _ _ () = (), None in
   ((), { Mod_typing.vm_handler })
 
-let expand_mexpr env mp me =
+(* let expand_mexpr env mp me =
   let inl = Some (Flags.get_inline_level()) in
   let state = ((Environ.universes env, Univ.Constraints.empty), Reductionops.inferred_universes) in
   let mb, (_, cst), _ = Mod_typing.translate_module state vm_state env mp inl (MExpr ([], me, None)) in
-  mb.mod_type, mb.mod_delta
+  mb.mod_type, mb.mod_delta *)
 
 let expand_modtype env mp me =
   let inl = Some (Flags.get_inline_level()) in
@@ -347,12 +347,24 @@ let rec extract_structure access env mp reso ~all = function
 
 and extract_mexpr access env mp = function
   | MEwith _ -> assert false (* no 'with' syntax for modules *)
-  | me ->
+  (* | me ->
       (* In Haskell/Scheme, we expand everything.
          For now, we also extract everything, dead code will be removed later
          (see [Modutil.optimize_struct]. *)
       let sign, delta = expand_mexpr env mp me in
-      extract_msignature access env mp delta ~all:true sign
+      extract_msignature access env mp delta ~all:true sign *)
+
+  | MEident mp ->
+
+      if is_modfile mp && not (modular ()) then error_MPfile_as_mod mp false;
+
+      Visit.add_mp_all mp; Miniml.MEident mp
+
+  | MEapply (me, arg) ->
+
+      Miniml.MEapply (extract_mexpr access env mp me,
+
+                      extract_mexpr access env mp (MEident arg))
 
 and extract_mexpression access env mp mty = function
   | MENoFunctor me -> extract_mexpr access env mp me
@@ -387,7 +399,7 @@ and extract_module access env mp ~all mb =
      Since we look at modules from outside, we shouldn't have variables.
      But a Declare Module at toplevel seems legal (cf #2525). For the
      moment we don't support this situation. *)
-  let impl = match mb.mod_expr with
+  let impl = match Declareops.mod_expr mb with
     | Abstract -> error_no_module_expr mp
     | Algebraic me -> extract_mexpression access env mp mb.mod_type me
     | Struct sign ->
@@ -401,7 +413,7 @@ and extract_module access env mp ~all mb =
   (* Slight optimization: for modules without explicit signatures
      ([FullStruct] case), we build the type out of the extracted
      implementation *)
-  let typ = match mb.mod_expr with
+  let typ = match Declareops.mod_expr mb with
     | FullStruct ->
       assert (Option.is_empty mb.mod_type_alg);
       mtyp_of_mexpr impl
@@ -596,7 +608,7 @@ let rec locate_ref = function
         | None, Some r -> let refs,mps = locate_ref l in r::refs,mps
         | Some mp, None -> let refs,mps = locate_ref l in refs,mp::mps
         | Some mp, Some r ->
-           warning_ambiguous_name (qid,mp,r);
+           warning_ambiguous_name ?loc:qid.CAst.loc (qid,mp,r);
            let refs,mps = locate_ref l in refs,mp::mps
 
 (*s Recursive cakeml_extraction in the Coq toplevel. The vernacular command is

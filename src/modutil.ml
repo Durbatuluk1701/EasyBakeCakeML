@@ -77,9 +77,9 @@ let struct_iter do_decl do_spec do_mp s =
 
 type do_ref = GlobRef.t -> unit
 
-(* let record_iter_references do_term = function
+let record_iter_references do_term = function
   | Record l -> List.iter (Option.iter do_term) l
-  | _ -> () *)
+  | _ -> ()
 
 let type_iter_references do_type t =
   let rec iter = function
@@ -116,8 +116,13 @@ let ind_iter_references do_term do_cons do_type kn ind =
   let cons_iter cp l = do_cons (GlobRef.ConstructRef cp); List.iter type_iter l in
   let packet_iter ip p =
     do_type (GlobRef.IndRef ip);
+    (match ind.ind_equiv with
+      | Miniml.Equiv kne -> do_type (GlobRef.IndRef (MutInd.make1 kne, snd ip));
+      | _ -> ());
     Array.iteri (fun j -> cons_iter (ip,j+1)) p.ip_types
   in
+  if (* lang () = Ocaml *) true (* assuming true for now*)
+    then record_iter_references do_term ind.ind_kind;
   Array.iteri (fun i -> packet_iter (kn,i)) ind.ind_packets
 
 let decl_iter_references do_term do_cons do_type =

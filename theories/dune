@@ -5,8 +5,7 @@
 
 (coq.theory
  (name EasyBakeCakeML)
- (package coq-EasyBakeCakeML)
+ (package rocq-EasyBakeCakeML)
  (theories)
- (plugins coq-EasyBakeCakeML.plugin)
+ (plugins rocq-EasyBakeCakeML.plugin)
  (synopsis "An extraction plugin for CakeML"))
-

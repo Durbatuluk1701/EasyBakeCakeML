@@ -10,10 +10,10 @@
 
 (* Extraction to CakeML : extract ascii to CakeML's char type *)
 
-From Coq Require extraction.Extraction.
+From Corelib Require extraction.Extraction.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 
-From Coq Require Import Ascii String Strings.Byte.
+From Stdlib Require Import String Strings.Byte Ascii.
 From EasyBakeCakeML Require Export ExtrCakeMLBasic.
 
 Extract Inductive ascii => char

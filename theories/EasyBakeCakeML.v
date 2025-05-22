@@ -1,1 +1,1 @@
-Declare ML Module "coq-EasyBakeCakeML.plugin".
+Declare ML Module "rocq-EasyBakeCakeML.plugin".

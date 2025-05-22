@@ -2,11 +2,13 @@
 ; Follow the instructions on https://github.com/coq-community/templates to regenerate.
 
 (library
- (name coq_EasyBakeCakeML)
- (public_name coq-EasyBakeCakeML.plugin)
+ (name rocq_EasyBakeCakeML)
+ (public_name rocq-EasyBakeCakeML.plugin)
  (synopsis "An extraction plugin for CakeML")
- (flags (:standard -w -9-27))
- (libraries coq-core.vernac coq-core.lib coq-core.plugins.extraction)
- (modules (:standard))
-)
-(coq.pp (modules g_extraction))
+ (flags
+  (:standard -w -9-27))
+ (libraries rocq-runtime.vernac)
+ (modules (:standard)))
+
+(coq.pp
+ (modules g_extraction))

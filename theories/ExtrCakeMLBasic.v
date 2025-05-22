@@ -8,7 +8,7 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-From Coq Require extraction.Extraction.
+From Corelib Require extraction.Extraction.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 
 (** Extraction to CakeML : use the basic CakeML types *)

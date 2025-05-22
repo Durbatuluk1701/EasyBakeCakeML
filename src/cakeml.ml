@@ -152,7 +152,7 @@ let pp_type par vl t =
       pp_par par (pp_rec true a1 ++ str (get_infix r) ++ pp_rec true a2)
     | Tglob (r,[]) -> pp_global Type r
     | Tglob (gr,l)
-      when not (keep_singleton ()) && Coqlib.check_ref sig_type_name gr ->
+      when not (keep_singleton ()) && Rocqlib.check_ref sig_type_name gr ->
       pp_tuple_light pp_rec l
     | Tglob (r,l) ->
       pp_tuple_light pp_rec l ++ spc () ++ pp_global Type r
@@ -171,7 +171,7 @@ let rec has_type_vars = function
     | Tglob (r,[a1;a2]) when is_infix r -> has_type_vars a1 || has_type_vars a2
     | Tglob (r,[]) -> false
     | Tglob (gr,l)
-      when not (keep_singleton ()) && Coqlib.check_ref sig_type_name gr ->
+      when not (keep_singleton ()) && Rocqlib.check_ref sig_type_name gr ->
       List.fold_left (||) false (List.map has_type_vars l)
     | Tglob (r,l) ->
       List.fold_left (||) false (List.map has_type_vars l)
@@ -534,6 +534,9 @@ let pp_decl = function
     let typ = if is_val && not (has_type_vars t) then str " : " ++ pp_type true [] t else str "" in
     pp_val name t ++ hov 0 (fun_or_val ++ name ++ typ ++ def ++ mt ()) (* HERE *)
   | Dfix (rv,defs,typs) ->
+    (* First we must check if this Fixpoint is a 0 arg fix.
+      if this is the case, we need to convert it to a 1 arg 
+      *)
     pp_Dfix (rv,defs,typs)
 
 let rec pp_structure_elem = function

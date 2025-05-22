@@ -11,7 +11,7 @@ authors:
   - name: "Will Thomas"
     email: "30wthomas@ku.edu"
 opam-file-maintainer: "30wthomas@ku.edu" # Need a strong default here or we will accidentally email a Coq developer
-opam-file-version: "0.3.0"
+opam-file-version: "0.4.0"
 
 ######################################################
 # NOTE: Optional Extra Info
@@ -44,8 +44,8 @@ nix: false
 ci_test_dependants: false
 ci_extra_dev: false
 ci_cron_schedule: 0 0 * * 0 # Weekly at midnight sunday
-tested_coq_opam_versions:
-  - version: "8.20"
+tested_rocq_opam_versions:
+  - version: "9.0.0"
 
 ## UNKNOWN: action_appendix:
 
@@ -57,7 +57,7 @@ submodule: false # By default we don't want submodules
 dune: true # By default we want dune builds
 ocaml_plugin: true # By default we don't assume plugins to use ocaml code
 ocaml_libraries:
-  - name: "coq-core.vernac"
+  - name: ".vernac"
   - name: "coq-core.lib"
   - name: "coq-core.plugins.extraction"
 ocaml_coq_pp_files:
@@ -72,9 +72,9 @@ license:
   - fullname: Creative Commons Attribution Share Alike 4.0 International
     identifier: CC-BY-SA-4.0
     file: LICENSE
-supported_coq_versions:
-  - text: "8.20"
-    opam: '{ == "8.20~" }'
+supported_rocq_versions:
+  - text: "9.0.0"
+    opam: '{ == "9.0~" }'
 supported_ocaml_versions:
   - text: "4.13 or later"
     opam: '{ >= "4.13~" }'

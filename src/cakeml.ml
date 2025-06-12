@@ -550,7 +550,14 @@ let rec pp_structure_elem = function
 
 and pp_module_expr params = function
   | MEident _ | MEapply _ -> assert false
-  | MEfunctor _ -> assert false
+  | MEfunctor (mbid, mt, me) ->
+
+      let name = pp_modname (MPbound mbid) in
+
+      let def = pp_module_expr (MPbound mbid :: params) me in
+
+      str "functor (" ++ name ++ str ":" ++ str "ty_here" ++ str ") ->" ++ fnl () ++ def
+      
   | MEstruct (mp, sel) ->
     push_visible mp params;
     let try_pp_structure_elem l x =

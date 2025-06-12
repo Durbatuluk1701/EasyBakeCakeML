@@ -549,7 +549,11 @@ let rec pp_structure_elem = function
   | (l,SEmodtype m) -> mt ()
 
 and pp_module_expr params = function
-  | MEident _ | MEapply _ -> assert false
+  | MEident mp -> pp_modname mp
+
+  | MEapply (me, me') ->
+
+      pp_module_expr [] me ++ str "(" ++ pp_module_expr [] me' ++ str ")"
   | MEfunctor (mbid, mt, me) ->
 
       let name = pp_modname (MPbound mbid) in

@@ -49,6 +49,14 @@ let modpath_of_r r =
 let label_of_r r =
   KerName.label (repr_of_r r)
 
+(*s FalseException flag management *)
+
+let false_exception_needed = ref false
+
+let set_false_exception_needed () = false_exception_needed := true
+let is_false_exception_needed () = !false_exception_needed
+let reset_false_exception_flag () = false_exception_needed := false
+
 let rec base_mp = function
   | MPdot (mp,l) -> base_mp mp
   | mp -> mp
@@ -1009,4 +1017,5 @@ let extract_inductive r s l optstr =
 let reset_tables () =
   init_typedefs (); init_cst_types (); init_inductives ();
   init_inductive_kinds (); init_recursors ();
-  init_projs (); init_axioms (); init_opaques (); reset_modfile ()
+  init_projs (); init_axioms (); init_opaques (); reset_modfile ();
+  reset_false_exception_flag ()

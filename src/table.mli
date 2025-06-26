@@ -178,6 +178,12 @@ val to_keep : GlobRef.t -> bool
 
 val implicits_of_global : GlobRef.t -> Int.Set.t
 
+(*s FalseException flag management *)
+
+val set_false_exception_needed : unit -> unit
+val is_false_exception_needed : unit -> bool
+val reset_false_exception_flag : unit -> unit
+
 (*s Table for user-given custom ML cakeml_extractions. *)
 
 (* UGLY HACK: registration of a function defined in [cakeml_extraction.ml] *)

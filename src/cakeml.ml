@@ -77,12 +77,18 @@ let pp_mldummy usf =
     str "val ml___dummy = ()" ++ fnl ()
   else mt ()
 
+(* Exception definition for when needed *)
+let pp_false_exception () =
+  if Table.is_false_exception_needed () then
+    str "exception FalseException of string;" ++ fnl ()
+  else mt ()
+
 let preamble _ comment used_modules usf =
   (if (List.length used_modules > 0)
   then (str "(* deps: " ++ prlist (fun mp -> (str (string_of_modfile mp) ++ str " ")) used_modules ++ str " *)" ++ fnl () ++ fnl ())
   else mt ()) ++
   pp_header_comment comment ++
-  then_nl (pp_tdummy usf ++ pp_mldummy usf)
+  then_nl (pp_false_exception () ++ pp_tdummy usf ++ pp_mldummy usf)
 
 (*s The pretty-printer for Ocaml syntax*)
 
@@ -92,13 +98,28 @@ let preamble _ comment used_modules usf =
 *)
 
 let str_global k r =
-  if is_inline_custom r then find_custom r else Common.pp_global k r
+  if is_inline_custom r then find_custom r 
+  else if modular () then
+    (* Use fully qualified names in modular mode *)
+    let full_path = Common.pp_global k r in
+    full_path
+  else Common.pp_global k r
 
 let pp_global k r = str (str_global k r)
 
-let pp_global_name k r = str (Common.pp_global k r)
+let pp_global_name k r = 
+  if modular () then
+    (* Use fully qualified names in modular mode *)
+    str (Common.pp_global k r)
+  else
+    str (Common.pp_global k r)
 
-let pp_modname mp = str (Common.pp_module mp)
+let pp_modname mp = 
+  if modular () then
+    (* Use fully qualified module names in modular mode *)
+    str (Common.pp_module mp)
+  else
+    str (Common.pp_module mp)
 
 (* grammar from OCaml 4.06 manual, "Prefix and infix symbols" *)
 
@@ -237,6 +258,7 @@ let rec pp_expr par env args =
     pp_fix par env' i (Array.of_list (List.rev ids'),defs) args
   | MLexn s ->
     (* An [MLexn] may be applied, but I don't really care. *)
+    Table.set_false_exception_needed ();
     pp_par par (str ("raise (FalseException \"" ^ s ^ "\")") ++ spc () ++ str ("(* "^s^" *)"))
   | MLdummy k ->
     (* An [MLdummy] may be applied, but I don't really care. *)
@@ -586,7 +608,17 @@ let do_struct f s =
   in
   let p = prlist_sep_nonempty cut2 ppl s in
   (if not (modular ()) then repeat (List.length s) pop_visible ());
-  v 0 p ++ fnl ()
+  (* Wrap the entire content in a structure when modular extraction *)
+  if modular () && not (List.is_empty s) then
+    let struct_name = match s with
+      | (mp, _) :: _ -> str (string_of_modfile mp)
+      | [] -> str "EmptyStruct"
+    in
+    str "structure " ++ struct_name ++ str " = struct" ++ fnl () ++
+    v 1 (str " " ++ p) ++ fnl () ++
+    str "end" ++ fnl ()
+  else
+    v 0 p ++ fnl ()
 
 let pp_struct s = do_struct pp_structure_elem s
 

@@ -77,18 +77,17 @@ let pp_mldummy usf =
     str "val ml___dummy = ()" ++ fnl ()
   else mt ()
 
-(* Exception definition for when needed *)
-let pp_false_exception () =
-  if Table.is_false_exception_needed () then
-    str "exception FalseException of string;" ++ fnl ()
-  else mt ()
-
 let preamble _ comment used_modules usf =
+  let used_modules =
+    if Table.is_false_exception_needed () && not (List.exists (fun mp -> string_of_modfile mp = "ExtractionPrelude") used_modules)
+    then used_modules @ [ModPath.MPfile (DirPath.make [Id.of_string "ExtractionPrelude"])]
+    else used_modules
+  in
   (if (List.length used_modules > 0)
   then (str "(* deps: " ++ prlist (fun mp -> (str (string_of_modfile mp) ++ str " ")) used_modules ++ str " *)" ++ fnl () ++ fnl ())
   else mt ()) ++
   pp_header_comment comment ++
-  then_nl (pp_false_exception () ++ pp_tdummy usf ++ pp_mldummy usf)
+  then_nl (pp_tdummy usf ++ pp_mldummy usf)
 
 (*s The pretty-printer for Ocaml syntax*)
 

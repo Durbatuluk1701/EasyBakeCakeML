@@ -49,11 +49,23 @@ let modpath_of_r r =
 let label_of_r r =
   KerName.label (repr_of_r r)
 
-(*s FalseException flag management *)
+(* Prelude accumulator for ExtractionPrelude *)
+let prelude_items = ref ([] : string list)
+
+let add_prelude_item s =
+  if not (List.mem s !prelude_items) then prelude_items := s :: !prelude_items
+
+let get_prelude_items () = List.rev !prelude_items
+let reset_prelude_items () = prelude_items := []
+
+(* FalseException flag management *)
 
 let false_exception_needed = ref false
 
-let set_false_exception_needed () = false_exception_needed := true
+let set_false_exception_needed () = 
+  false_exception_needed := true;
+  add_prelude_item "exception FalseException string"
+
 let is_false_exception_needed () = !false_exception_needed
 let reset_false_exception_flag () = false_exception_needed := false
 

@@ -225,5 +225,11 @@ val cakeml_extraction_blacklist : string list -> unit
 val reset_cakeml_extraction_blacklist : unit -> unit
 val print_cakeml_extraction_blacklist : unit -> Pp.t
 
+(*s Prelude item management *)
+
+val add_prelude_item : string -> unit
+val get_prelude_items : unit -> string list
+val reset_prelude_items : unit -> unit
+
 
 

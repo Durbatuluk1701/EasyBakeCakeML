@@ -22,6 +22,16 @@ open Extraction
 open Modutil
 open Common
 
+let write_extraction_prelude () =
+  let items = Table.get_prelude_items () in
+  if items <> [] then begin
+    let prelude_path = Filename.concat (output_directory ()) "ExtractionPrelude.cml" in
+    let oc = open_out prelude_path in
+    List.iter (fun s -> output_string oc (s ^ "\n")) items;
+    close_out oc;
+    Table.reset_prelude_items ()
+  end
+
 (***************************************)
 (*S Part I: computing Coq environment. *)
 (***************************************)
@@ -622,7 +632,8 @@ let full_extr opaque_access f (refs,mps) =
   let struc = optimize_struct (refs,mps) (mono_environment ~opaque_access refs mps) in
   warns ();
   print_structure_to_file (mono_filename f) false struc;
-  reset ()
+  reset ();
+  write_extraction_prelude ()
 
 let full_cakeml_extraction ~opaque_access f lr =
   full_extr opaque_access f (locate_ref lr)
@@ -647,7 +658,8 @@ let separate_cakeml_extraction ~opaque_access lr =
     | (MPdot _ | MPbound _), _ -> assert false
   in
   List.iter print struc;
-  reset ()
+  reset ();
+  write_extraction_prelude ()
 
 (*s Simple cakeml_extraction in the Coq toplevel. The vernacular command
     is \verb!Extraction! [qualid]. *)
@@ -697,7 +709,8 @@ let cakeml_extraction_library ~opaque_access is_rec CAst.{loc;v=m} =
     | _ -> assert false
   in
   List.iter print struc;
-  reset ()
+  reset ();
+  write_extraction_prelude ()
 
 (** For cakeml_extraction compute, we flatten all the module structure,
     getting rid of module types or unapplied functors *)

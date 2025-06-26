@@ -98,6 +98,9 @@ let preamble _ comment used_modules usf =
   pp_header_comment comment ++
   then_nl (pp_tdummy usf ++ pp_mldummy usf)
 
+(* Set the protected_modules reference in Table to our local value *)
+let () = Table.protected_modules := protected_modules
+
 (*s The pretty-printer for Ocaml syntax*)
 
 (* Beware of the side-effects of [pp_global] and [pp_modname].

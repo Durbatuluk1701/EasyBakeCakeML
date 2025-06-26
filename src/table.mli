@@ -231,5 +231,5 @@ val add_prelude_item : string -> unit
 val get_prelude_items : unit -> string list
 val reset_prelude_items : unit -> unit
 
-
-
+(* Expose protected_modules for runtime assignment from cakeml.ml *)
+val protected_modules : Id.Set.t ref

@@ -237,7 +237,7 @@ let rec pp_expr par env args =
     pp_fix par env' i (Array.of_list (List.rev ids'),defs) args
   | MLexn s ->
     (* An [MLexn] may be applied, but I don't really care. *)
-    pp_par par (str "Runtime.assert \"false\" false" ++ spc () ++ str ("(* "^s^" *)"))
+    pp_par par (str "Runtime.assert false \"false\"" ++ spc () ++ str ("(* "^s^" *)"))
   | MLdummy k ->
     (* An [MLdummy] may be applied, but I don't really care. *)
     (match msg_of_implicit k with

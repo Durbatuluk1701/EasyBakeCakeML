@@ -31,7 +31,12 @@ let keywords =
       "raise"; "rec"; "sharing"; "sig"; "signature"; "struct"; "structure";
       "then"; "type"; "val"; "where"; "with"; "withtype";
       "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr" ; "unit" ; "_" ; "ml___dummy";
-      "div"; "o"
+      "div"; "o"; 
+      (* CakeML Built in modules we don't want to accidentally shadow *)
+      "Runtime"; "Option"; "List"; "Alist"; "Vector"; "String";
+      "Bool"; "Pair"; "Int"; "PrettyPrinter"; "Rat"; "Char"; "Word64";
+      "Word8"; "Array"; "Map"; "Hashtable"; "CommandLine"; "Double";
+      "Marshalling"; "TextIO"
        ]
     Id.Set.empty
 

@@ -9,6 +9,7 @@
 (************************************************************************)
 
 From Corelib Require extraction.Extraction.
+From Stdlib Require Import Bool List.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 
 (** Extraction to CakeML : use the basic CakeML types *)
@@ -17,6 +18,11 @@ Extract Inductive bool => bool [ "True" "False" ].
 Extract Inductive option => option [ Some None ].
 Extract Inductive unit => unit [ "()" ].
 Extract Inductive list => list [ "[]" "( :: )" ].
+Extract Inlined Constant List.length => "List.length".
+Extract Inlined Constant List.app => "List.@".
+
+(** Extracting nat to int is not always nicer, but it helps
+    when realizing stuff like [lt_eq_lt_dec] *)
 Extract Inductive prod => "( * )" [ "" ].
 
 (** NB: The "" above is a hack, but produce nicer code than "(,)" *)

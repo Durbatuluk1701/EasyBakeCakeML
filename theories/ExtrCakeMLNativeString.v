@@ -41,7 +41,7 @@ Extract Inductive string => "string"
 Extract Inlined Constant String.string_dec => "(op=)".
 Extract Inlined Constant String.eqb => "(op=)".
 Extract Inlined Constant String.append => "String.^".
-Extract Inlined Constant String.concat => "String.concat".
+Extract Inlined Constant String.concat => "String.concatWith".
 Extract Inlined Constant String.prefix =>
   "(fn s1 => fn s2 =>
      let val l1 = String.size s1 

@@ -97,8 +97,6 @@ let begins_with_CoqXX s =
   done; true
   with Not_found -> false
 
-let unquote s = s
-
 let rec qualify delim = function
   | [] -> assert false
   | [s] -> s
@@ -584,16 +582,10 @@ let pp_ocaml_gen k mp rls olab =
 let pp_global_with_key k key r =
   let ls = ref_renaming (k,r) in
   assert (List.length ls > 1);
-  let s = List.hd ls in
   let mp,l = KerName.repr key in
-  if ModPath.equal mp (top_visible_mp ()) then
-    (* simplest situation: definition of r (or use in the same context) *)
-    (* we update the visible environment *)
-    (add_visible (k,s) l; unquote s)
-  else
-    let rls = List.rev ls in (* for what come next it's easier this way *)
-    (* NOTE: We know this is CakeML, but we use ocaml one! *)
-    pp_ocaml_gen k mp rls (Some l) (* Should maybe be its own function *)
+  let rls = List.rev ls in
+  (* Always use fully qualified names, even in the same context *)
+  pp_ocaml_gen k mp rls (Some l)
 
 let pp_global k r =
   pp_global_with_key k (repr_of_r r) r

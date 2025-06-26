@@ -239,15 +239,15 @@ let get_mpfiles_content mp =
 
 (*s The list of external modules that will be opened initially *)
 
-let mpfiles_add, mpfiles_mem, mpfiles_list, mpfiles_clear =
+let mpfiles_add, mpfiles_list, mpfiles_clear =
   let m = ref MPset.empty in
   let add mp = m:=MPset.add mp !m
-  and mem mp = MPset.mem mp !m
+  (* and mem mp = MPset.mem mp !m *)
   and list () = MPset.elements !m
   and clear () = m:=MPset.empty
   in
   register_cleanup clear;
-  (add,mem,list,clear)
+  (add,list,clear)
 
 (*s List of module parameters that we should alpha-rename *)
 
@@ -427,17 +427,6 @@ let ref_renaming =
    modules. More precisely, we check if there exists a
    visible [mp] that contains [s].
    The verification stops if we encounter [mp=mp0]. *)
-
-let rec clash mem mp0 ks = function
-  | [] -> false
-  | mp :: _ when ModPath.equal mp mp0 -> false
-  | mp :: _ when mem mp ks -> true
-  | _ :: mpl -> clash mem mp0 ks mpl
-
-let mpfiles_clash mp0 ks =
-  clash (fun mp k -> KMap.mem k (get_mpfiles_content mp)) mp0 ks
-    (List.rev (mpfiles_list ()))
-
 let rec params_lookup mp0 ks = function
   | [] -> false
   | param :: _ when ModPath.equal mp0 param -> true
@@ -553,19 +542,19 @@ let pp_ocaml_bound base rls =
 let pp_ocaml_extern k base rls = match rls with
   | [] -> assert false
   | base_s :: rls' ->
-      if (not (modular ())) (* Pseudo qualification with "" *)
+      (* if (not (modular ())) (* Pseudo qualification with "" *)
         || (List.is_empty rls')  (* Case of a file A.v used as a module later *)
         || (not (mpfiles_mem base)) (* Module not opened *)
         || (mpfiles_clash base (fstlev_ks k rls')) (* Conflict in opened files *)
         || (visible_clash base (fstlev_ks k rls')) (* Local conflict *)
-      then
+      then *)
         (* We need to fully qualify. Last clash situation is unsupported *)
         match visible_clash_dbg base (Mod,base_s) with
           | None -> dottify rls
           | Some (mp,l) -> error_module_clash base (MPdot (mp,l))
-      else
+      (* else
         (* Standard situation : object in an opened file *)
-        dottify rls'
+        dottify rls' *)
 
 (* [pp_ocaml_gen] : choosing between [pp_ocaml_local] or [pp_ocaml_extern] *)
 

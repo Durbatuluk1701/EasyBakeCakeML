@@ -96,29 +96,18 @@ let preamble _ comment used_modules usf =
    below should not be altered since they force evaluation order.
 *)
 
+(* Patch: always use fully qualified names for globals, types, and constructors *)
+
+(* Ensure all global references use fully qualified names *)
 let str_global k r =
   if is_inline_custom r then find_custom r 
-  else if modular () then
-    (* Use fully qualified names in modular mode *)
-    let full_path = Common.pp_global k r in
-    full_path
   else Common.pp_global k r
 
 let pp_global k r = str (str_global k r)
 
-let pp_global_name k r = 
-  if modular () then
-    (* Use fully qualified names in modular mode *)
-    str (Common.pp_global k r)
-  else
-    str (Common.pp_global k r)
+let pp_global_name k r = str (Common.pp_global k r)
 
-let pp_modname mp = 
-  if modular () then
-    (* Use fully qualified module names in modular mode *)
-    str (Common.pp_module mp)
-  else
-    str (Common.pp_module mp)
+let pp_modname mp = str (Common.pp_module mp)
 
 (* grammar from OCaml 4.06 manual, "Prefix and infix symbols" *)
 
@@ -553,11 +542,8 @@ let pp_decl = function
     let fun_or_val = if is_val then str "val " else str "fun " in
     let name = pp_global_name Term r in
     let typ = if is_val && not (has_type_vars t) then str " : " ++ pp_type true [] t else str "" in
-    pp_val name t ++ hov 0 (fun_or_val ++ name ++ typ ++ def ++ mt ()) (* HERE *)
+    pp_val name t ++ hov 0 (fun_or_val ++ name ++ typ ++ def ++ mt ())
   | Dfix (rv,defs,typs) ->
-    (* First we must check if this Fixpoint is a 0 arg fix.
-      if this is the case, we need to convert it to a 1 arg 
-      *)
     pp_Dfix (rv,defs,typs)
 
 let rec pp_structure_elem = function

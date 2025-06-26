@@ -23,6 +23,15 @@ open Common
 
 (*s Some utility functions. *)
 
+let protected_modules = 
+  List.fold_right (fun s acc -> Id.Set.add (Id.of_string s) acc) [
+    (* CakeML Built in modules we don't want to accidentally shadow *)
+  "Runtime"; "Option"; "List"; "Alist"; "Vector"; "String";
+  "Bool"; "Pair"; "Int"; "PrettyPrinter"; "Rat"; "Char"; "Word64";
+  "Word8"; "Array"; "Map"; "Hashtable"; "CommandLine"; "Double";
+  "Marshalling"; "TextIO"
+] Id.Set.empty
+
 let keywords =
   List.fold_right (fun s -> Id.Set.add (Id.of_string s))
     [ "and"; "andalso"; "as"; "case"; "datatype";
@@ -32,11 +41,6 @@ let keywords =
       "then"; "type"; "val"; "where"; "with"; "withtype";
       "land"; "lor"; "lxor"; "lsl"; "lsr"; "asr" ; "unit" ; "_" ; "ml___dummy";
       "div"; "o"; 
-      (* CakeML Built in modules we don't want to accidentally shadow *)
-      "Runtime"; "Option"; "List"; "Alist"; "Vector"; "String";
-      "Bool"; "Pair"; "Int"; "PrettyPrinter"; "Rat"; "Char"; "Word64";
-      "Word8"; "Array"; "Map"; "Hashtable"; "CommandLine"; "Double";
-      "Marshalling"; "TextIO"
        ]
     Id.Set.empty
 

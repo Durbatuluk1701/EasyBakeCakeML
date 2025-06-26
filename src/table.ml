@@ -28,6 +28,11 @@ open Miniml
 module Refmap' = GlobRef.Map_env
 module Refset' = GlobRef.Set_env
 
+(* Reference to protected_modules from cakeml.ml *)
+let protected_modules : Id.Set.t ref =
+  (* This will be set from cakeml.ml *)
+  ref Id.Set.empty
+
 (*S Utilities about [module_path] and [kernel_names] and [global_reference] *)
 
 let occur_kn_in_ref kn = let open GlobRef in function
@@ -321,6 +326,14 @@ let pr_long_mp mp =
   str (String.concat "." (List.rev_map Id.to_string lid))
 
 let pr_long_global ref = pr_path (Nametab.path_of_global ref)
+
+(* Utility to check and rename protected modules *)
+let is_protected_module id =
+  Id.Set.mem id !protected_modules
+
+let coq_prefix_if_protected s =
+  let id = Id.of_string (String.capitalize_ascii s) in
+  if is_protected_module id then "Coq_" ^ s else s
 
 (*S Warning and Error messages. *)
 
@@ -839,9 +852,10 @@ let string_of_modfile mp =
     let id = Id.of_string (raw_string_of_modfile mp) in
     let id' = next_ident_away id !modfile_ids in
     let s' = Id.to_string id' in
+    let s'_renamed = coq_prefix_if_protected s' in
     modfile_ids := Id.Set.add id' !modfile_ids;
-    modfile_mps := MPmap.add mp s' !modfile_mps;
-    s'
+    modfile_mps := MPmap.add mp s'_renamed !modfile_mps;
+    s'_renamed
 
 (* same as [string_of_modfile], but preserves the capital/uncapital 1st char *)
 
@@ -850,7 +864,8 @@ let file_of_modfile mp =
     | MPfile f -> Id.to_string (List.hd (DirPath.repr f))
     | _ -> assert false
   in
-  String.mapi (fun i c -> if i = 0 then s0.[0] else c) (string_of_modfile mp)
+  let s0_renamed = coq_prefix_if_protected s0 in
+  String.mapi (fun i c -> if i = 0 then s0_renamed.[0] else c) (string_of_modfile mp)
 
 let add_blacklist_entries l =
   blacklist_table :=

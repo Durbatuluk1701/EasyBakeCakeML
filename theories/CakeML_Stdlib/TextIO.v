@@ -64,5 +64,3 @@ Module TextIO.
   Global Opaque printLn_err.
 
 End TextIO.
-
-Separate CakeML_Extraction TextIO.

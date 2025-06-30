@@ -8,7 +8,6 @@
 (*         *     (see LICENSE file for the text of the license)         *)
 (************************************************************************)
 
-From Corelib Require extraction.Extraction.
 From Stdlib Require Import Bool List.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 

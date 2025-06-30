@@ -10,7 +10,6 @@
 
 (* Extraction to CakeML : extract ascii to CakeML's char type *)
 
-From Corelib Require extraction.Extraction.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 
 From Stdlib Require Import String Strings.Byte Ascii.

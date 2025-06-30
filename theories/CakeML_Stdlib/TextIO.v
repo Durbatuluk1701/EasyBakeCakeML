@@ -7,6 +7,8 @@ From Stdlib Require Import String.
 Module TextIO.
   Definition instream : Type. Admitted.
   Definition outstream : Type. Admitted.
+  Extract Inlined Constant instream => "TextIO.instream".
+  Extract Inlined Constant outstream => "TextIO.outstream".
 
   Definition print (s : string) : unit. Admitted.
   Extract Inlined Constant print => "TextIO.print".
@@ -62,3 +64,5 @@ Module TextIO.
   Global Opaque printLn_err.
 
 End TextIO.
+
+Separate CakeML_Extraction TextIO.

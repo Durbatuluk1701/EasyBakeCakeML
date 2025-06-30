@@ -6,6 +6,6 @@
 (coq.theory
  (name EasyBakeCakeML)
  (package rocq-EasyBakeCakeML)
- (theories)
+ (theories Stdlib)
  (plugins rocq-EasyBakeCakeML.plugin)
  (synopsis "An extraction plugin for CakeML"))

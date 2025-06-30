@@ -11,7 +11,6 @@
 (* Extraction to CakeML : does everything in ExtrCakeMLChar.v 
    as well as extracting strings to CakeML's string type. *)
 
-From Corelib Require extraction.Extraction.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 
 From Stdlib Require Import Ascii String Strings.Byte.

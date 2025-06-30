@@ -1,4 +1,3 @@
-From Corelib Require extraction.Extraction.
 From EasyBakeCakeML Require Export EasyBakeCakeML.
 
 Extract Inductive nat => "int" 

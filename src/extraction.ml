@@ -1099,7 +1099,11 @@ let extract_constant access env kn cb =
   in
   let mk_ax () =
     let t = extract_axiom env sg kn typ in
-    Dterm (r, MLaxiom (Constant.to_string kn), t)
+    (* Check if there's a custom inline extraction for this axiom *)
+    if is_inline_custom r 
+    (* Prevent MLaxiom from being created if we have a custom entry! *)
+    then Dterm (r, MLglob r, t)
+    else Dterm (r, MLaxiom (Constant.to_string kn), t)
   in
   let mk_def c =
     let e,t = extract_std_constant env sg kn c typ in

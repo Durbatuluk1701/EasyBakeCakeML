@@ -1077,8 +1077,9 @@ let rec simpl o = function
       if
         (is_atomic c) || (is_atomic e) ||
         (let n = nb_occur_match e in
-         (Int.equal n 0 || (Int.equal n 1 && expand_linear_let o id e)))
-      then
+          (* Note: if n = 0, thats fine, because it must be a side-effect *)
+         (Int.equal n 1 && expand_linear_let o id e))
+      then 
         simpl o (ast_subst c e)
       else
         MLletin(id, simpl o c, e)

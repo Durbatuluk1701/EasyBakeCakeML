@@ -46,13 +46,13 @@ Module TextIO.
   Definition readFile (fname : string) : string := 
     let s := openIn fname in
     let content := inputAll s in
-    let s' := closeIn s in
+    let _ := closeIn s in
     content.
   Global Opaque readFile.
 
   Definition writeFile (fname : string) (content : string) : unit :=
     let s := openOut fname in
-    let s' := output s content in
+    let _ := output s content in
     closeOut s.
   Global Opaque writeFile.
 
@@ -67,3 +67,5 @@ Module TextIO.
   Global Opaque printLn_err.
 
 End TextIO.
+
+Separate CakeML_Extraction TextIO.writeFile.

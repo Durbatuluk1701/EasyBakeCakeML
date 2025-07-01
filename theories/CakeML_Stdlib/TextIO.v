@@ -46,7 +46,7 @@ Module TextIO.
   Definition readFile (fname : string) : string := 
     let s := openIn fname in
     let content := inputAll s in
-    let _ := closeIn s in
+    let s' := closeIn s in
     content.
   Global Opaque readFile.
 

@@ -53,8 +53,7 @@ Module TextIO.
   Definition writeFile (fname : string) (content : string) : unit :=
     let s := openOut fname in
     let _ := output s content in
-    let _ := closeOut s in
-    tt.
+    closeOut s.
   Global Opaque writeFile.
 
   Local Open Scope char_scope.

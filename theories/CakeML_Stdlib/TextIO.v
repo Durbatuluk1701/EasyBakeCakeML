@@ -1,5 +1,5 @@
 From EasyBakeCakeML Require Export EasyBakeCakeML ExtrCakeMLNativeString.
-From Stdlib Require Import String.
+From Stdlib Require Import String Ascii.
 
 (* This file defines the CakeML standard TextIO library as shims, then fills in their implementations *)
 
@@ -57,10 +57,14 @@ Module TextIO.
     tt.
   Global Opaque writeFile.
 
-  Definition printLn (s : string) : unit := print (String.append s "\n").
+  Local Open Scope char_scope.
+  Definition newline : string := (String "010" EmptyString).
+  Local Close Scope char_scope.
+
+  Definition printLn (s : string) : unit := print (String.append s newline).
   Global Opaque printLn.
 
-  Definition printLn_err (s : string) : unit := print_err (String.append s "\n").
+  Definition printLn_err (s : string) : unit := print_err (String.append s newline).
   Global Opaque printLn_err.
 
 End TextIO.

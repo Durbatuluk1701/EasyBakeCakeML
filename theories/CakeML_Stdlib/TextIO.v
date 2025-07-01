@@ -52,7 +52,7 @@ Module TextIO.
 
   Definition writeFile (fname : string) (content : string) : unit :=
     let s := openOut fname in
-    let _ := output s content in
+    let s' := output s content in
     closeOut s.
   Global Opaque writeFile.
 

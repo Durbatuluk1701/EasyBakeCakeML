@@ -12,7 +12,7 @@ authors:
   - name: "Will Thomas"
     email: "30wthomas@ku.edu"
 opam-file-maintainer: "30wthomas@ku.edu" # Need a strong default here or we will accidentally email a Coq developer
-opam-file-version: "0.4.0"
+opam-file-version: "0.5.0"
 
 ######################################################
 # NOTE: Optional Extra Info

@@ -4,6 +4,7 @@ fullname: Easy Bake CakeML - CakeML Extraction Plugin
 # NOTE: The shortname is also the REPOSITORY NAME!!!
 shortname: EasyBakeCakeML # NOTE: This is the library name that other projects will use to depend on/import from this project
 lib_name: EasyBakeCakeML # NOTE: This is the library name that will be used in the Coq code
+opam_name: rocq-EasyBakeCakeML
 synopsis: "An extraction plugin for CakeML"
 description: "An extraction plugin for CakeML that does not require any semantic preservation proofs."
 authors:
@@ -57,10 +58,8 @@ submodule: false # By default we don't want submodules
 dune: true # By default we want dune builds
 ocaml_plugin: true # By default we don't assume plugins to use ocaml code
 ocaml_libraries:
-  - name: ".vernac"
-  - name: "coq-core.lib"
-  - name: "coq-core.plugins.extraction"
-ocaml_coq_pp_files:
+  - name: "rocq-runtime.vernac"
+ocaml_rocq_pp_files:
   - name: "g_extraction"
 
 # date: # by default we arent setting a date

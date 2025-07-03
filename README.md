@@ -20,7 +20,6 @@ An extraction plugin for CakeML that does not require any semantic preservation 
   - TJ Barclay
   - Will Thomas
 - License: [Creative Commons Attribution Share Alike 4.0 International](LICENSE)
-- Compatible Coq versions: 8.20
 - Compatible OCaml versions: 4.13 or later
 - Additional dependencies:
   - [Dune](https://dune.build) 3.17 or later
@@ -33,7 +32,7 @@ is via [OPAM](https://opam.ocaml.org/doc/Install.html):
 
 ```shell
 opam repo add coq-released https://coq.inria.fr/opam/released
-opam install coq-EasyBakeCakeML
+opam install rocq-EasyBakeCakeML
 ```
 
 To instead build and install manually, do:

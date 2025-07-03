@@ -5,10 +5,8 @@
  (name rocq_EasyBakeCakeML)
  (public_name rocq-EasyBakeCakeML.plugin)
  (synopsis "An extraction plugin for CakeML")
- (flags
-  (:standard -w -9-27))
+ (flags (:standard -w -9-27))
  (libraries rocq-runtime.vernac)
- (modules (:standard)))
-
-(coq.pp
- (modules g_extraction))
+ (modules (:standard))
+)
+(coq.pp (modules g_extraction))

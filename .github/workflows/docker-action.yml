@@ -19,13 +19,13 @@ jobs:
     strategy:
       matrix:
         image:
-          - 'coqorg/coq:8.20'
+          - 'rocq/rocq-prover:9.0.0'
       fail-fast: false
     steps:
       - uses: actions/checkout@v4
       - uses: coq-community/docker-coq-action@v1
         with:
-          opam_file: 'coq-EasyBakeCakeML.opam'
+          opam_file: 'rocq-EasyBakeCakeML.opam'
           custom_image: ${{ matrix.image }}
           before_install: |
             startGroup "Setup and print opam config"

@@ -23,7 +23,6 @@ val safe_basename_of_global : GlobRef.t -> Id.t
 val warning_axioms : unit -> unit
 val warning_opaques : bool -> unit
 val warning_ambiguous_name : ?loc:Loc.t -> qualid * ModPath.t * GlobRef.t -> unit
-val warning_id : string -> unit
 val error_axiom_scheme : ?loc:Loc.t -> GlobRef.t -> int -> 'a
 val error_constant : ?loc:Loc.t -> GlobRef.t -> 'a
 val error_inductive : ?loc:Loc.t -> GlobRef.t -> 'a

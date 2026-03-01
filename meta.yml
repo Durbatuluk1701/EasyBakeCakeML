@@ -46,7 +46,7 @@ ci_test_dependants: false
 ci_extra_dev: false
 ci_cron_schedule: 0 0 * * 0 # Weekly at midnight sunday
 tested_rocq_opam_versions:
-  - version: "9.0.0"
+  - version: "9.0"
 
 ## UNKNOWN: action_appendix:
 
@@ -72,7 +72,7 @@ license:
     identifier: CC-BY-SA-4.0
     file: LICENSE
 supported_rocq_versions:
-  - text: "9.0.0"
+  - text: "9.0"
     opam: '{ == "9.0~" }'
 supported_ocaml_versions:
   - text: "4.13 or later"

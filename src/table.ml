@@ -432,13 +432,6 @@ let check_inside_section () =
     err (str "You can't do that within a section." ++ fnl () ++
          str "Close it and try again.")
 
-let warn_cakeml_extraction_reserved_identifier =
-  CWarnings.create ~name:"cakeml_extraction-reserved-identifier" ~category:cake_extr_warnings
-    (fun s -> strbrk ("The identifier "^s^
-                " contains __ which is reserved for the cakeml_extraction"))
-
-let warning_id s = warn_cakeml_extraction_reserved_identifier s
-
 let error_constant ?loc r =
   err ?loc (safe_pr_global r ++ str " is not a constant.")
 
